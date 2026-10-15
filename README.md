@@ -118,11 +118,9 @@ PORT = 5000 or 8080
 ```
 </details>
 
-> [!NOTE]
->  * ⚠️ Never publish your actual BOT_TOKEN or TMDB_API_KEY on GitHub.
->
 
 🚀 DEPLOYMENT GUIDE
+
 1. Deploy on Render
 <p align="left">
 <a href="https://render.com/">
@@ -194,6 +192,11 @@ pip install -r requirements.txt
 python bot.py
 ```
 </details>
+
+> [!NOTE]
+>  * ⚠️ Never publish your actual BOT_TOKEN or TMDB_API_KEY on GitHub.
+>
+<img src="https://user-images.githubusercontent.com/73097560/115834477-dbab4500-a447-11eb-908a-139a6edaec5c.gif">
 
 > [!CAUTION]
 >  * Never share your BOT_TOKEN.
