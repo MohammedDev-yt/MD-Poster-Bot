@@ -93,12 +93,12 @@ MD-Poster-Bot/
 
 <img src="https://user-images.githubusercontent.com/73097560/115834477-dbab4500-a447-11eb-908a-139a6edaec5c.gif">
 
-# ​⚙️ Environment Variables
+⚙️ Environment Variables
 ​<details>
 <summary>👇 Click Here To Expand Variables</summary>
+
 ```
 # variable Description
-
 BOT_TOKEN = Telegram Bot Token from @BotFather
 TMDB_API_KEY = TMDb API Key for fetching posters and metadata
 MONGO_URI = MongoDB Connection URI (Optional fallback to SQLite)
@@ -107,7 +107,7 @@ RENDER_EXTERNAL_URL = External app URL for direct image links
 PORTWeb server port (Default: 5000)
 ```
 
-# Example Environment Configuration
+#Example Environment Configuration
 
 ```
 BOT_TOKEN=YOUR_BOT_TOKEN_HERE
@@ -174,7 +174,6 @@ docker run -d \
 
 ```
 #Clone repository
-
 git clone [https://github.com/MohammedDev-yt/MD-Poster-Bot.git](https://github.com/MohammedDev-yt/MD-Poster-Bot.git)
 cd MD-Poster-Bot
 
@@ -194,12 +193,10 @@ python bot.py
 ​Keep your TMDB_API_KEY and MONGO_URI private.
 ​Use environment variables for sensitive credentials.
 
-​<img src="https://user-images.githubusercontent.com/73097560/115834477-dbab4500-a447-11eb-908a-139a6edaec5c.gif">
-​
-[!WARNING] DON'T REMOVE MY CREDIT...
-​Developer: MOHAMMED
-​Updates: AERO UNITY
-​Support: CODERS GROUP
+​<img src="https://user-images.githubusercontent.com/73097560/115834477-dbab4500-a447-11eb-908a-139a6edaec5c.gif"> [!WARNING] DON'T REMOVE MY CREDIT...
+​Developer: @Mr_Mohammed_29 
+​Updates: @Aero_Unit
+​Support: @Coders_Grp 
 
 ​<img src="https://user-images.githubusercontent.com/73097560/115834477-dbab4500-a447-11eb-908a-139a6edaec5c.gif">
 ​
