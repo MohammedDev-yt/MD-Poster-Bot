@@ -90,6 +90,7 @@ MD-Poster-Bot/
 ├── requirements.txt      # Python dependencies
 └── render.yml            # Render deployment configuration
 ```
+</details>
 
 <img src="https://user-images.githubusercontent.com/73097560/115834477-dbab4500-a447-11eb-908a-139a6edaec5c.gif">
 
@@ -106,8 +107,6 @@ MD-Poster-Bot/
 | `POSTER_GROUP_URL`  | Telegram group link for restricted PM searches |
 | `RENDER_EXTERNAL_URL` | External app URL for direct image links |
 | `PORT`           | Web server port (Default: 5000)  | 
-
-</details>
 
 ```
 #Example Environment Configuration
