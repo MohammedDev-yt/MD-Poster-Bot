@@ -70,12 +70,16 @@ banlist - View banned users list [Owner only]
 addforcesub - Add force subscription channel [Owner only]
 removeforce - Remove force subscription channel [Owner only]
 fsublist - View force subscription channels [Owner only]
+```
 
 <img src="https://user-images.githubusercontent.com/73097560/115834477-dbab4500-a447-11eb-908a-139a6edaec5c.gif">
+
 <details>
 <summary><h2>🛠️ Development & Deployment</h2></summary>
 Welcome to the development documentation of Universal Poster Bot.
+
 📁 Repository Structure
+```
 MD-Poster-Bot/
 │
 ├── poster_cache/         # Cached landscape and portrait posters
@@ -84,6 +88,7 @@ MD-Poster-Bot/
 ├── Dockerfile            # Docker container configuration
 ├── requirements.txt      # Python dependencies
 └── render.yml            # Render deployment configuration
+```
 
 <img src="https://user-images.githubusercontent.com/73097560/115834477-dbab4500-a447-11eb-908a-139a6edaec5c.gif">
 ⚙️ Environment Variables
@@ -97,16 +102,20 @@ MD-Poster-Bot/
 | POSTER_GROUP_URL | Telegram group link for restricted PM searches |
 | RENDER_EXTERNAL_URL | External app URL for direct image links |
 | PORT | Web server port (Default: 5000) |
+
+```
 Example Environment Configuration
 BOT_TOKEN=YOUR_BOT_TOKEN_HERE
 TMDB_API_KEY=YOUR_TMDB_API_KEY_HERE
 MONGO_URI=mongodb+srv://username:password@cluster.mongodb.net/
 POSTER_GROUP_URL=[https://t.me/+VXY_za8DNjQzYmVl](https://t.me/+VXY_za8DNjQzYmVl)
-
+```
 </details>
+
 > [!NOTE]
 > ⚠️ Never publish your actual BOT_TOKEN or TMDB_API_KEY on GitHub.
-> 
+>
+ 
 🚀 DEPLOYMENT GUIDE
 1. Deploy on Render
 <p align="left">
@@ -114,47 +123,27 @@ POSTER_GROUP_URL=[https://t.me/+VXY_za8DNjQzYmVl](https://t.me/+VXY_za8DNjQzYmVl
 <img src="https://img.shields.io/badge/🚀%20Deploy%20on%20Render-6A00FF?style=for-the-badge&logo=render">
 </a>
 </p>
- * Fork this repository.
- * Open Render, click New +, and select Web Service.
- * Connect your GitHub repository.
- * Set Build Command: pip install -r requirements.txt
- * Set Start Command: python bot.py
- * Add your Environment Variables and click Deploy.
+
 2. Deploy on Koyeb
 <p align="left">
 <a href="https://app.koyeb.com/">
 <img src="https://img.shields.io/badge/🚀%20Deploy%20on%20Koyeb-000000?style=for-the-badge&logo=koyeb&logoColor=white">
 </a>
 </p>
- * Fork this repository.
- * Go to Koyeb Dashboard and click Create App.
- * Choose GitHub as the deployment source and select your repository.
- * Select Docker or Python runtime.
- * Add required environment variables and click Deploy.
+
 3. Deploy on Railway
 <p align="left">
 <a href="https://railway.app/">
 <img src="https://img.shields.io/badge/🚀%20Deploy%20on%20Railway-131415?style=for-the-badge&logo=railway&logoColor=white">
 </a>
 </p>
- * Fork this repository.
- * Open Railway and click New Project -> Deploy from GitHub repo.
- * Select your repository.
- * Go to Variables tab and add all environment variables (BOT_TOKEN, TMDB_API_KEY, etc.).
- * Railway will automatically build and start your bot.
-4. Deploy on Heroku
+
+4. Deploy On Heroku 
 <p align="left">
 <a href="https://heroku.com/">
 <img src="https://img.shields.io/badge/🚀%20Deploy%20on%20Heroku-430098?style=for-the-badge&logo=heroku&logoColor=white">
 </a>
 </p>
- * Install the Heroku CLI and login via terminal: heroku login
- * Create a Heroku app: heroku create your-app-name
- * Set your environment variables:
-   heroku config:set BOT_TOKEN="your_token" TMDB_API_KEY="your_key" MONGO_URI="your_uri"
-
- * Push code to Heroku:
-   git push heroku main
 
 5. Deploy via Docker
 <p align="left">
@@ -191,11 +180,12 @@ pip install -r requirements.txt
 python bot.py
 
 </details>
+
 > [!CAUTION]
 >  * Never share your BOT_TOKEN.
 >  * Keep your TMDB_API_KEY and MONGO_URI private.
 >  * Use environment variables for sensitive credentials.
-> 
+>
 <img src="https://user-images.githubusercontent.com/73097560/115834477-dbab4500-a447-11eb-908a-139a6edaec5c.gif">
 > [!WARNING]
 > DON'T REMOVE MY CREDIT...
@@ -208,7 +198,6 @@ python bot.py
 If you like this bot, give it a ⭐ on GitHub to support the project!
 <p align="center">
 <b>Made with ❤️ by Mohammed</b>
-
 
 📩 Contact: <a href="https://t.me/Mr_Mohammed_29">Mohammed</a>
 </p>
