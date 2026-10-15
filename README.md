@@ -96,14 +96,16 @@ MD-Poster-Bot/
 
 ⚙️ Environment Variables
 <details>
+  
 <summary>👇 Click Here To Expand Variables</summary>
-```text
-BOT_TOKEN = Telegram Bot Token from @BotFather
-TMDB_API_KEY = TMDb API Key for fetching posters and metadata
-MONGO_URI = MongoDB Connection URI (Optional fallback to SQLite)
-POSTER_GROUP_URL = Telegram group link for restricted PM searches
-RENDER_EXTERNAL_URL = External app URL for direct image links
-PORT = Web server port (Default: 5000)
+```text 
+
+* BOT_TOKEN = Telegram Bot Token from @BotFather
+* TMDB_API_KEY = TMDb API Key for fetching posters and metadata
+* MONGO_URI = MongoDB Connection URI (Optional fallback to SQLite)
+* POSTER_GROUP_URL = Telegram group link for restricted PM searches
+* RENDER_EXTERNAL_URL = External app URL for direct image links
+* PORT = Web server port (Default: 5000)
 ```
 
 ```
@@ -117,9 +119,8 @@ POSTER_GROUP_URL=[https://t.me/+VXY_za8DNjQzYmVl](https://t.me/+VXY_za8DNjQzYmVl
 </details>
 
 > [!NOTE]
-> * ⚠️ Never publish your actual BOT_TOKEN or TMDB_API_KEY on GitHub.
+>  * ⚠️ Never publish your actual BOT_TOKEN or TMDB_API_KEY on GitHub.
 >
-
 
 🚀 DEPLOYMENT GUIDE
 1. Deploy on Render
@@ -156,11 +157,14 @@ POSTER_GROUP_URL=[https://t.me/+VXY_za8DNjQzYmVl](https://t.me/+VXY_za8DNjQzYmVl
 </p>
 
 Build and run the container locally or on a server using Docker:
+
+```
 #Build docker image
 docker build -t universal-poster-bot .
-
-#Run container with environment variables
 ```
+
+```
+#Run container with environment variables
 docker run -d \
   -e BOT_TOKEN="your_bot_token" \
   -e TMDB_API_KEY="your_tmdb_key" \
