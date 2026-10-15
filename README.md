@@ -1,3 +1,4 @@
+
 <p align="center">
   <img src="https://capsule-render.vercel.app/api?type=waving&color=0:050505,50:6A00FF,100:00C8FF&height=180&section=header&text=UNIVERSAL%20POSTER%20BOT&fontSize=35&fontColor=ffffff&animation=fadeIn&fontAlignY=38&desc=Developed%20By%20Mohammed&descAlignY=60&descSize=16" width="100%">
 </p>
@@ -69,18 +70,12 @@ banlist - View banned users list [Owner only]
 addforcesub - Add force subscription channel [Owner only]
 removeforce - Remove force subscription channel [Owner only]
 fsublist - View force subscription channels [Owner only]
-```
 
 <img src="https://user-images.githubusercontent.com/73097560/115834477-dbab4500-a447-11eb-908a-139a6edaec5c.gif">
-
-​<details>
+<details>
 <summary><h2>🛠️ Development & Deployment</h2></summary>
-
- ​Welcome to the development documentation of Universal Poster Bot.
-
-# Repository Structure
-
-```
+Welcome to the development documentation of Universal Poster Bot.
+📁 Repository Structure
 MD-Poster-Bot/
 │
 ├── poster_cache/         # Cached landscape and portrait posters
@@ -89,126 +84,135 @@ MD-Poster-Bot/
 ├── Dockerfile            # Docker container configuration
 ├── requirements.txt      # Python dependencies
 └── render.yml            # Render deployment configuration
-```
 
 <img src="https://user-images.githubusercontent.com/73097560/115834477-dbab4500-a447-11eb-908a-139a6edaec5c.gif">
-
 ⚙️ Environment Variables
-​<details>
+<details>
 <summary>👇 Click Here To Expand Variables</summary>
-
-```
-# variable Description
-BOT_TOKEN = Telegram Bot Token from @BotFather
-TMDB_API_KEY = TMDb API Key for fetching posters and metadata
-MONGO_URI = MongoDB Connection URI (Optional fallback to SQLite)
-POSTER_GROUP_URL = Telegram group link for restricted PM searches
-RENDER_EXTERNAL_URL = External app URL for direct image links
-PORTWeb server port (Default: 5000)
-```
-
-#Example Environment Configuration
-
-```
+| Variable | Description |
+|---|---|
+| BOT_TOKEN | Telegram Bot Token from @BotFather |
+| TMDB_API_KEY | TMDb API Key for fetching posters and metadata |
+| MONGO_URI | MongoDB Connection URI (Optional fallback to SQLite) |
+| POSTER_GROUP_URL | Telegram group link for restricted PM searches |
+| RENDER_EXTERNAL_URL | External app URL for direct image links |
+| PORT | Web server port (Default: 5000) |
+Example Environment Configuration
 BOT_TOKEN=YOUR_BOT_TOKEN_HERE
 TMDB_API_KEY=YOUR_TMDB_API_KEY_HERE
 MONGO_URI=mongodb+srv://username:password@cluster.mongodb.net/
 POSTER_GROUP_URL=[https://t.me/+VXY_za8DNjQzYmVl](https://t.me/+VXY_za8DNjQzYmVl)
-```
-​[!NOTE] ⚠️ Never publish your actual BOT_TOKEN or TMDB_API_KEY on GitHub.
 
-# DEPLOYMENT GUIDE
-
-​1. Deploy on Render
-​<p align="left">
+</details>
+> [!NOTE]
+> ⚠️ Never publish your actual BOT_TOKEN or TMDB_API_KEY on GitHub.
+> 
+🚀 DEPLOYMENT GUIDE
+1. Deploy on Render
+<p align="left">
 <a href="https://render.com/">
 <img src="https://img.shields.io/badge/🚀%20Deploy%20on%20Render-6A00FF?style=for-the-badge&logo=render">
 </a>
 </p>
-
-​2. Deploy on Koyeb
-​<p align="left">
+ * Fork this repository.
+ * Open Render, click New +, and select Web Service.
+ * Connect your GitHub repository.
+ * Set Build Command: pip install -r requirements.txt
+ * Set Start Command: python bot.py
+ * Add your Environment Variables and click Deploy.
+2. Deploy on Koyeb
+<p align="left">
 <a href="https://app.koyeb.com/">
 <img src="https://img.shields.io/badge/🚀%20Deploy%20on%20Koyeb-000000?style=for-the-badge&logo=koyeb&logoColor=white">
 </a>
 </p>
-
+ * Fork this repository.
+ * Go to Koyeb Dashboard and click Create App.
+ * Choose GitHub as the deployment source and select your repository.
+ * Select Docker or Python runtime.
+ * Add required environment variables and click Deploy.
 3. Deploy on Railway
-​<p align="left">
+<p align="left">
 <a href="https://railway.app/">
 <img src="https://img.shields.io/badge/🚀%20Deploy%20on%20Railway-131415?style=for-the-badge&logo=railway&logoColor=white">
 </a>
 </p>
-
-​4. Deploy on Heroku
-​<p align="left">
+ * Fork this repository.
+ * Open Railway and click New Project -> Deploy from GitHub repo.
+ * Select your repository.
+ * Go to Variables tab and add all environment variables (BOT_TOKEN, TMDB_API_KEY, etc.).
+ * Railway will automatically build and start your bot.
+4. Deploy on Heroku
+<p align="left">
 <a href="https://heroku.com/">
 <img src="https://img.shields.io/badge/🚀%20Deploy%20on%20Heroku-430098?style=for-the-badge&logo=heroku&logoColor=white">
 </a>
 </p>
+ * Install the Heroku CLI and login via terminal: heroku login
+ * Create a Heroku app: heroku create your-app-name
+ * Set your environment variables:
+   heroku config:set BOT_TOKEN="your_token" TMDB_API_KEY="your_key" MONGO_URI="your_uri"
+
+ * Push code to Heroku:
+   git push heroku main
 
 5. Deploy via Docker
-​<p align="left">
+<p align="left">
 <img src="https://img.shields.io/badge/🚀%20Deploy%20via%20Docker-2496ED?style=for-the-badge&logo=docker&logoColor=white">
 </p>
-​Build and run the container locally or on a server using Docker:
-
-```
-
-#Build docker image
+Build and run the container locally or on a server using Docker:
+# Build docker image
 docker build -t universal-poster-bot .
 
-#Run container with environment variables
+# Run container with environment variables
 docker run -d \
   -e BOT_TOKEN="your_bot_token" \
   -e TMDB_API_KEY="your_tmdb_key" \
   -e MONGO_URI="your_mongo_uri" \
   -p 5000:5000 \
   --name poster-bot universal-poster-bot
-```
 
 6. Deploy on VPS / Local Machine
-​<p align="left">
+<p align="left">
 <img src="https://img.shields.io/badge/🚀%20Deploy%20on%20VPS/Local-00599C?style=for-the-badge&logo=linux&logoColor=white">
 </p>
-
-```
-#Clone repository
+# Clone repository
 git clone [https://github.com/MohammedDev-yt/MD-Poster-Bot.git](https://github.com/MohammedDev-yt/MD-Poster-Bot.git)
 cd MD-Poster-Bot
 
-#Create virtual environment
+# Create virtual environment
 python3 -m venv venv
 source venv/bin/activate
 
-#Install requirements
+# Install requirements
 pip install -r requirements.txt
 
-#Run bot
+# Run bot
 python bot.py
-```
+
 </details>
-
-​[!CAUTION] ​Never share your BOT_TOKEN.
-​Keep your TMDB_API_KEY and MONGO_URI private.
-​Use environment variables for sensitive credentials.
-
-​<img src="https://user-images.githubusercontent.com/73097560/115834477-dbab4500-a447-11eb-908a-139a6edaec5c.gif"> [!WARNING] DON'T REMOVE MY CREDIT...
-​Developer: @Mr_Mohammed_29 
-​Updates: @Aero_Unit
-​Support: @Coders_Grp 
-
-​<img src="https://user-images.githubusercontent.com/73097560/115834477-dbab4500-a447-11eb-908a-139a6edaec5c.gif">
-​
+> [!CAUTION]
+>  * Never share your BOT_TOKEN.
+>  * Keep your TMDB_API_KEY and MONGO_URI private.
+>  * Use environment variables for sensitive credentials.
+> 
+<img src="https://user-images.githubusercontent.com/73097560/115834477-dbab4500-a447-11eb-908a-139a6edaec5c.gif">
+> [!WARNING]
+> DON'T REMOVE MY CREDIT...
+>  * Developer: @Mr_Mohammed_29
+>  * Updates: @Aero_Unity
+>  * Support: @Coders_Grp
+> 
+<img src="https://user-images.githubusercontent.com/73097560/115834477-dbab4500-a447-11eb-908a-139a6edaec5c.gif">
 ⭐ Fork and ⭐ this repo
-​If you like this bot, give it a ⭐ on GitHub to support the project!
-
-​<p align="center">
+If you like this bot, give it a ⭐ on GitHub to support the project!
+<p align="center">
 <b>Made with ❤️ by Mohammed</b>
+
 
 📩 Contact: <a href="https://t.me/Mr_Mohammed_29">Mohammed</a>
 </p>
-
 <p align="center">
-  <img src="https://capsule-render.vercel.app/api?type=waving&color=0:050505,50:6A00FF,100:00C8FF&height=120&section=footer"/>
+<img src="https://capsule-render.vercel.app/api?type=waving&color=0:050505,50:6A00FF,100:00C8FF&height=120&section=footer"/>
 </p>
+
