@@ -95,21 +95,28 @@ MD-Poster-Bot/
 
 ⚙️ Environment Variables
 <details>
-<summary>👇 Click Here To Expand Variables</summary> 
-`BOT_TOKEN` = Telegram Bot Token from @BotFather
-`TMDB_API_KEY` = TMDb API Key for fetching posters and metadata
-`MONGO_URI` = MongoDB Connection URI (Optional fallback to SQLite)
-`POSTER_GROUP_URL` = Telegram group link for restricted PM searches
-`RENDER_EXTERNAL_URL` = External app URL for direct image links
-`PORT` = Web server port (Default: 5000)
-  
+
+<summary><b>Click Here To Expand Variables</b></summary>
+
+| Variable        | Description                                |
+| --------------- | ------------------------------------------ |
+| `BOT_TOKEN`     | Telegram Bot Token from BotFather          |
+| `TMDB_API_KEY`  | TMDb API Key for fetching posters and metadata |
+| `MONGO_URI`     | MongoDB Connection String                  |
+| `POSTER_GROUP_URL`  | Telegram group link for restricted PM searches |
+| `RENDER_EXTERNAL_URL` | External app URL for direct image links |
+| `PORT`           | Web server port (Default: 5000)  | 
+
+</details>
+
 ```
 #Example Environment Configuration
 
-BOT_TOKEN=YOUR_BOT_TOKEN_HERE
-TMDB_API_KEY=YOUR_TMDB_API_KEY_HERE
-MONGO_URI=mongodb+srv://username:password@cluster.mongodb.net/
-POSTER_GROUP_URL=[https://t.me/+VXY_za8DNjQzYmVl](https://t.me/+VXY_za8DNjQzYmVl)
+BOT_TOKEN = YOUR_BOT_TOKEN_HERE
+TMDB_API_KEY = YOUR_TMDB_API_KEY_HERE
+MONGO_URI = mongodb+srv://username:password@cluster.mongodb.net/
+POSTER_GROUP_URL = [https://t.me/+VXY_za8DNjQzYmVl](https://t.me/+VXY_za8DNjQzYmVl)
+PORT = 5000 or 8080
 ```
 </details>
 
