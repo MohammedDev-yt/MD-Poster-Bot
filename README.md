@@ -76,7 +76,7 @@ fsublist - View force subscription channels [Owner only]
 <summary><h2>🛠️ Development & Deployment</h2></summary>
 ​Welcome to the development documentation of Universal Poster Bot.
 
-#Repository Structure
+##Repository Structure
 
 ```
 MD-Poster-Bot/
@@ -95,7 +95,8 @@ MD-Poster-Bot/
 <summary>👇 Click Here To Expand Variables</summary>
 
 ```
-VariableDescription
+##VariableDescription
+
 BOT_TOKENTelegram Bot Token from @BotFather
 TMDB_API_KEYTMDb API Key for fetching posters and metadata
 MONGO_URIMongoDB Connection URI (Optional fallback to SQLite)
@@ -104,7 +105,7 @@ RENDER_EXTERNAL_URLExternal app URL for direct image links
 PORTWeb server port (Default: 5000)
 ```
 
-#Example Environment Configuration
+##Example Environment Configuration
 
 ```
 BOT_TOKEN=YOUR_BOT_TOKEN_HERE
@@ -112,8 +113,6 @@ TMDB_API_KEY=YOUR_TMDB_API_KEY_HERE
 MONGO_URI=mongodb+srv://username:password@cluster.mongodb.net/
 POSTER_GROUP_URL=[https://t.me/+VXY_za8DNjQzYmVl](https://t.me/+VXY_za8DNjQzYmVl)
 ```
-</details>
-
 
 ​[!NOTE]
 ⚠️ Never publish your actual BOT_TOKEN or TMDB_API_KEY on GitHub.
@@ -187,28 +186,35 @@ pip install -r requirements.txt
 # Run bot
 python bot.py
 ```
-
 </details>
+
 ​[!CAUTION]
 ​Never share your BOT_TOKEN.
 ​Keep your TMDB_API_KEY and MONGO_URI private.
 ​Use environment variables for sensitive credentials.
 ​<img src="https://user-images.githubusercontent.com/73097560/115834477-dbab4500-a447-11eb-908a-139a6edaec5c.gif">
-​[!WARNING]
+​
+[!WARNING]
 DON'T REMOVE MY CREDIT...
 ​Developer: MOHAMMED
 ​Updates: AERO UNITY
 ​Support: CODERS GROUP
+
 ​<img src="https://user-images.githubusercontent.com/73097560/115834477-dbab4500-a447-11eb-908a-139a6edaec5c.gif">
-​⭐ Fork and ⭐ this repo
+​
+⭐ Fork and ⭐ this repo
 ​If you like this bot, give it a ⭐ on GitHub to support the project!
+
 ​<p align="center">
 <img src="https://capsule-render.vercel.app/api?type=waving&color=0:050505,50:6A00FF,100:00C8FF&height=120&section=footer"/>
 </p>
+
 ​<p align="center">
 <b>Made with ❤️ by Mohammed</b>
-
 
 📩 Contact: <a href="https://t.me/Mr_Mohammed_29">Mohammed</a>
 </p>
 
+<p align="center">
+  <img src="https://capsule-render.vercel.app/api?type=waving&color=0:050505,50:6A00FF,100:00C8FF&height=120&section=footer"/>
+</p>
