@@ -76,7 +76,8 @@ fsublist - View force subscription channels [Owner only]
 
 <details>
 <summary><h2>🛠️ Development & Deployment</h2></summary>
-**Welcome to the development documentation of Universal Poster Bot.**
+
+  Welcome to the development documentation of Universal Poster Bot.
 
 📁 Repository Structure
 ```
@@ -114,9 +115,9 @@ POSTER_GROUP_URL=[https://t.me/+VXY_za8DNjQzYmVl](https://t.me/+VXY_za8DNjQzYmVl
 ```
 </details>
 
-> [!NOTE]
-> ⚠️ Never publish your actual BOT_TOKEN or TMDB_API_KEY on GitHub.
+> [!NOTE]  ⚠️ Never publish your actual BOT_TOKEN or TMDB_API_KEY on GitHub.
 >
+
 
 🚀 DEPLOYMENT GUIDE
 1. Deploy on Render
@@ -171,6 +172,7 @@ docker run -d \
 </p>
 
 #Clone repository
+```
 git clone [https://github.com/MohammedDev-yt/MD-Poster-Bot.git](https://github.com/MohammedDev-yt/MD-Poster-Bot.git)
 cd MD-Poster-Bot
 
@@ -183,7 +185,7 @@ pip install -r requirements.txt
 
 #Run bot
 python bot.py
-
+```
 </details>
 
 > [!CAUTION]
