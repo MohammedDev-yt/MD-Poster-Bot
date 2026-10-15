@@ -76,7 +76,7 @@ fsublist - View force subscription channels [Owner only]
 
 <details>
 <summary><h2>🛠️ Development & Deployment</h2></summary>
-Welcome to the development documentation of Universal Poster Bot.
+**Welcome to the development documentation of Universal Poster Bot.**
 
 📁 Repository Structure
 ```
@@ -92,13 +92,14 @@ MD-Poster-Bot/
 
 <img src="https://user-images.githubusercontent.com/73097560/115834477-dbab4500-a447-11eb-908a-139a6edaec5c.gif">
 
+
 ⚙️ Environment Variables
 <details>
 <summary>👇 Click Here To Expand Variables</summary>
+
 ```
 | Variable | Description |
-|---|---|
-| BOT_TOKEN | Telegram Bot Token from @BotFather |
+| BOT_TOKEN |   Telegram Bot Token from @BotFather |
 | TMDB_API_KEY | TMDb API Key for fetching posters and metadata |
 | MONGO_URI | MongoDB Connection URI (Optional fallback to SQLite) |
 | POSTER_GROUP_URL | Telegram group link for restricted PM searches |
@@ -156,12 +157,14 @@ Build and run the container locally or on a server using Docker:
 docker build -t universal-poster-bot .
 
 #Run container with environment variables
+```
 docker run -d \
   -e BOT_TOKEN="your_bot_token" \
   -e TMDB_API_KEY="your_tmdb_key" \
   -e MONGO_URI="your_mongo_uri" \
   -p 5000:5000 \
   --name poster-bot universal-poster-bot
+```
 
 6. Deploy on VPS / Local Machine
 <p align="left">
