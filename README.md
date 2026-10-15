@@ -93,7 +93,6 @@ MD-Poster-Bot/
 
 <img src="https://user-images.githubusercontent.com/73097560/115834477-dbab4500-a447-11eb-908a-139a6edaec5c.gif">
 
-⚙️ Environment Variables
 <details>
 
 <summary><b>Click Here To Expand Variables</b></summary>
@@ -119,7 +118,7 @@ PORT = 5000 or 8080
 </details>
 
 
-🚀 DEPLOYMENT GUIDE
+🚀 <summary><b>DEPLOYMENT GUIDE</summary></b>
 
 1. Deploy on Render
 <p align="left">
