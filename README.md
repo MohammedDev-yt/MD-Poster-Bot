@@ -206,10 +206,6 @@ DON'T REMOVE MY CREDIT...
 ​If you like this bot, give it a ⭐ on GitHub to support the project!
 
 ​<p align="center">
-<img src="https://capsule-render.vercel.app/api?type=waving&color=0:050505,50:6A00FF,100:00C8FF&height=120&section=footer"/>
-</p>
-
-​<p align="center">
 <b>Made with ❤️ by Mohammed</b>
 
 📩 Contact: <a href="https://t.me/Mr_Mohammed_29">Mohammed</a>
