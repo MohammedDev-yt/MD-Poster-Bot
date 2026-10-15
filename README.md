@@ -72,11 +72,13 @@ fsublist - View force subscription channels [Owner only]
 ```
 
 <img src="https://user-images.githubusercontent.com/73097560/115834477-dbab4500-a447-11eb-908a-139a6edaec5c.gif">
+
 ​<details>
 <summary><h2>🛠️ Development & Deployment</h2></summary>
-​Welcome to the development documentation of Universal Poster Bot.
 
-##Repository Structure
+# ​Welcome to the development documentation of Universal Poster Bot.
+
+# Repository Structure
 
 ```
 MD-Poster-Bot/
@@ -90,12 +92,13 @@ MD-Poster-Bot/
 ```
 
 <img src="https://user-images.githubusercontent.com/73097560/115834477-dbab4500-a447-11eb-908a-139a6edaec5c.gif">
-​⚙️ Environment Variables
+
+# ​⚙️ Environment Variables
 ​<details>
 <summary>👇 Click Here To Expand Variables</summary>
 
 ```
-# Variable Description
+# variable Description
 
 BOT_TOKEN = Telegram Bot Token from @BotFather
 TMDB_API_KEY = TMDb API Key for fetching posters and metadata
@@ -113,7 +116,6 @@ TMDB_API_KEY=YOUR_TMDB_API_KEY_HERE
 MONGO_URI=mongodb+srv://username:password@cluster.mongodb.net/
 POSTER_GROUP_URL=[https://t.me/+VXY_za8DNjQzYmVl](https://t.me/+VXY_za8DNjQzYmVl)
 ```
-
 ​[!NOTE] ⚠️ Never publish your actual BOT_TOKEN or TMDB_API_KEY on GitHub.
 
 # DEPLOYMENT GUIDE
@@ -154,9 +156,11 @@ POSTER_GROUP_URL=[https://t.me/+VXY_za8DNjQzYmVl](https://t.me/+VXY_za8DNjQzYmVl
 
 ```
 # Build docker image
+
 docker build -t universal-poster-bot .
 
 # Run container with environment variables
+
 docker run -d \
   -e BOT_TOKEN="your_bot_token" \
   -e TMDB_API_KEY="your_tmdb_key" \
@@ -169,9 +173,9 @@ docker run -d \
 ​<p align="left">
 <img src="https://img.shields.io/badge/🚀%20Deploy%20on%20VPS/Local-00599C?style=for-the-badge&logo=linux&logoColor=white">
 </p>
-
 ```
 # Clone repository
+
 git clone [https://github.com/MohammedDev-yt/MD-Poster-Bot.git](https://github.com/MohammedDev-yt/MD-Poster-Bot.git)
 cd MD-Poster-Bot
 
@@ -190,6 +194,7 @@ python bot.py
 ​[!CAUTION] ​Never share your BOT_TOKEN.
 ​Keep your TMDB_API_KEY and MONGO_URI private.
 ​Use environment variables for sensitive credentials.
+
 ​<img src="https://user-images.githubusercontent.com/73097560/115834477-dbab4500-a447-11eb-908a-139a6edaec5c.gif">
 ​
 [!WARNING] DON'T REMOVE MY CREDIT...
