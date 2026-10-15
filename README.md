@@ -77,7 +77,7 @@ fsublist - View force subscription channels [Owner only]
 <details>
 <summary><h2>🛠️ Development & Deployment</h2></summary>
 
-  Welcome to the development documentation of Universal Poster Bot.
+Welcome to the development documentation of Universal Poster Bot.
 
 📁 Repository Structure
 ```
@@ -93,12 +93,12 @@ MD-Poster-Bot/
 
 <img src="https://user-images.githubusercontent.com/73097560/115834477-dbab4500-a447-11eb-908a-139a6edaec5c.gif">
 
+
 ⚙️ Environment Variables
 <details>
 <summary>👇 Click Here To Expand Variables</summary>
-  #Variable Description 
-```
-| BOT_TOKEN |   Telegram Bot Token from @BotFather |
+``` 
+  | BOT_TOKEN |   Telegram Bot Token from @BotFather |
 | TMDB_API_KEY | TMDb API Key for fetching posters and metadata |
 | MONGO_URI | MongoDB Connection URI (Optional fallback to SQLite) |
 | POSTER_GROUP_URL | Telegram group link for restricted PM searches |
@@ -115,7 +115,9 @@ POSTER_GROUP_URL=[https://t.me/+VXY_za8DNjQzYmVl](https://t.me/+VXY_za8DNjQzYmVl
 ```
 </details>
 
-> [!NOTE]  ⚠️ Never publish your actual BOT_TOKEN or TMDB_API_KEY on GitHub.
+
+> [!NOTE]
+> ⚠️ Never publish your actual BOT_TOKEN or TMDB_API_KEY on GitHub.
 >
 
 
@@ -171,8 +173,8 @@ docker run -d \
 <img src="https://img.shields.io/badge/🚀%20Deploy%20on%20VPS/Local-00599C?style=for-the-badge&logo=linux&logoColor=white">
 </p>
 
-#Clone repository
 ```
+#Clone repository
 git clone [https://github.com/MohammedDev-yt/MD-Poster-Bot.git](https://github.com/MohammedDev-yt/MD-Poster-Bot.git)
 cd MD-Poster-Bot
 
@@ -193,6 +195,7 @@ python bot.py
 >  * Keep your TMDB_API_KEY and MONGO_URI private.
 >  * Use environment variables for sensitive credentials.
 >
+
 <img src="https://user-images.githubusercontent.com/73097560/115834477-dbab4500-a447-11eb-908a-139a6edaec5c.gif">
 
 > [!WARNING]
