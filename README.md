@@ -76,7 +76,7 @@ fsublist - View force subscription channels [Owner only]
 ​<details>
 <summary><h2>🛠️ Development & Deployment</h2></summary>
 
-# ​Welcome to the development documentation of Universal Poster Bot.
+ ​Welcome to the development documentation of Universal Poster Bot.
 
 # Repository Structure
 
@@ -96,7 +96,6 @@ MD-Poster-Bot/
 # ​⚙️ Environment Variables
 ​<details>
 <summary>👇 Click Here To Expand Variables</summary>
-
 ```
 # variable Description
 
@@ -155,12 +154,11 @@ POSTER_GROUP_URL=[https://t.me/+VXY_za8DNjQzYmVl](https://t.me/+VXY_za8DNjQzYmVl
 ​Build and run the container locally or on a server using Docker:
 
 ```
-# Build docker image
 
+#Build docker image
 docker build -t universal-poster-bot .
 
-# Run container with environment variables
-
+#Run container with environment variables
 docker run -d \
   -e BOT_TOKEN="your_bot_token" \
   -e TMDB_API_KEY="your_tmdb_key" \
@@ -173,20 +171,21 @@ docker run -d \
 ​<p align="left">
 <img src="https://img.shields.io/badge/🚀%20Deploy%20on%20VPS/Local-00599C?style=for-the-badge&logo=linux&logoColor=white">
 </p>
+
 ```
-# Clone repository
+#Clone repository
 
 git clone [https://github.com/MohammedDev-yt/MD-Poster-Bot.git](https://github.com/MohammedDev-yt/MD-Poster-Bot.git)
 cd MD-Poster-Bot
 
-# Create virtual environment
+#Create virtual environment
 python3 -m venv venv
 source venv/bin/activate
 
-# Install requirements
+#Install requirements
 pip install -r requirements.txt
 
-# Run bot
+#Run bot
 python bot.py
 ```
 </details>
