@@ -92,19 +92,19 @@ MD-Poster-Bot/
 
 <img src="https://user-images.githubusercontent.com/73097560/115834477-dbab4500-a447-11eb-908a-139a6edaec5c.gif">
 
-
 ⚙️ Environment Variables
 <details>
 <summary>👇 Click Here To Expand Variables</summary>
-
+  #Variable Description 
 ```
-| Variable | Description |
 | BOT_TOKEN |   Telegram Bot Token from @BotFather |
 | TMDB_API_KEY | TMDb API Key for fetching posters and metadata |
 | MONGO_URI | MongoDB Connection URI (Optional fallback to SQLite) |
 | POSTER_GROUP_URL | Telegram group link for restricted PM searches |
 | RENDER_EXTERNAL_URL | External app URL for direct image links |
 | PORT | Web server port (Default: 5000) |
+```
+
 ```
 Example Environment Configuration
 BOT_TOKEN=YOUR_BOT_TOKEN_HERE
@@ -117,7 +117,7 @@ POSTER_GROUP_URL=[https://t.me/+VXY_za8DNjQzYmVl](https://t.me/+VXY_za8DNjQzYmVl
 > [!NOTE]
 > ⚠️ Never publish your actual BOT_TOKEN or TMDB_API_KEY on GitHub.
 >
- 
+
 🚀 DEPLOYMENT GUIDE
 1. Deploy on Render
 <p align="left">
@@ -165,7 +165,6 @@ docker run -d \
   -p 5000:5000 \
   --name poster-bot universal-poster-bot
 ```
-
 6. Deploy on VPS / Local Machine
 <p align="left">
 <img src="https://img.shields.io/badge/🚀%20Deploy%20on%20VPS/Local-00599C?style=for-the-badge&logo=linux&logoColor=white">
