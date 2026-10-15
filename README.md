@@ -113,6 +113,7 @@ BOT_TOKEN = YOUR_BOT_TOKEN_HERE
 TMDB_API_KEY = YOUR_TMDB_API_KEY_HERE
 MONGO_URI = mongodb+srv://username:password@cluster.mongodb.net/
 POSTER_GROUP_URL = [https://t.me/+VXY_za8DNjQzYmVl](https://t.me/+VXY_za8DNjQzYmVl)
+RENDER_EXTERNAL_URL = Your Deployed App URL
 PORT = 5000 or 8080
 ```
 </details>
