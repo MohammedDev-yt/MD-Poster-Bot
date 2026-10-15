@@ -91,9 +91,11 @@ MD-Poster-Bot/
 ```
 
 <img src="https://user-images.githubusercontent.com/73097560/115834477-dbab4500-a447-11eb-908a-139a6edaec5c.gif">
+
 ⚙️ Environment Variables
 <details>
 <summary>👇 Click Here To Expand Variables</summary>
+```
 | Variable | Description |
 |---|---|
 | BOT_TOKEN | Telegram Bot Token from @BotFather |
@@ -102,7 +104,6 @@ MD-Poster-Bot/
 | POSTER_GROUP_URL | Telegram group link for restricted PM searches |
 | RENDER_EXTERNAL_URL | External app URL for direct image links |
 | PORT | Web server port (Default: 5000) |
-
 ```
 Example Environment Configuration
 BOT_TOKEN=YOUR_BOT_TOKEN_HERE
@@ -149,11 +150,12 @@ POSTER_GROUP_URL=[https://t.me/+VXY_za8DNjQzYmVl](https://t.me/+VXY_za8DNjQzYmVl
 <p align="left">
 <img src="https://img.shields.io/badge/🚀%20Deploy%20via%20Docker-2496ED?style=for-the-badge&logo=docker&logoColor=white">
 </p>
+
 Build and run the container locally or on a server using Docker:
-# Build docker image
+#Build docker image
 docker build -t universal-poster-bot .
 
-# Run container with environment variables
+#Run container with environment variables
 docker run -d \
   -e BOT_TOKEN="your_bot_token" \
   -e TMDB_API_KEY="your_tmdb_key" \
@@ -165,18 +167,19 @@ docker run -d \
 <p align="left">
 <img src="https://img.shields.io/badge/🚀%20Deploy%20on%20VPS/Local-00599C?style=for-the-badge&logo=linux&logoColor=white">
 </p>
-# Clone repository
+
+#Clone repository
 git clone [https://github.com/MohammedDev-yt/MD-Poster-Bot.git](https://github.com/MohammedDev-yt/MD-Poster-Bot.git)
 cd MD-Poster-Bot
 
-# Create virtual environment
+#Create virtual environment
 python3 -m venv venv
 source venv/bin/activate
 
-# Install requirements
+#Install requirements
 pip install -r requirements.txt
 
-# Run bot
+#Run bot
 python bot.py
 
 </details>
@@ -187,13 +190,16 @@ python bot.py
 >  * Use environment variables for sensitive credentials.
 >
 <img src="https://user-images.githubusercontent.com/73097560/115834477-dbab4500-a447-11eb-908a-139a6edaec5c.gif">
+
 > [!WARNING]
 > DON'T REMOVE MY CREDIT...
 >  * Developer: @Mr_Mohammed_29
 >  * Updates: @Aero_Unity
 >  * Support: @Coders_Grp
-> 
+>
+ 
 <img src="https://user-images.githubusercontent.com/73097560/115834477-dbab4500-a447-11eb-908a-139a6edaec5c.gif">
+
 ⭐ Fork and ⭐ this repo
 If you like this bot, give it a ⭐ on GitHub to support the project!
 <p align="center">
