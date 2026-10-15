@@ -95,17 +95,17 @@ MD-Poster-Bot/
 <summary>👇 Click Here To Expand Variables</summary>
 
 ```
-##VariableDescription
+# Variable Description
 
-BOT_TOKENTelegram Bot Token from @BotFather
-TMDB_API_KEYTMDb API Key for fetching posters and metadata
-MONGO_URIMongoDB Connection URI (Optional fallback to SQLite)
-POSTER_GROUP_URLTelegram group link for restricted PM searches
-RENDER_EXTERNAL_URLExternal app URL for direct image links
+BOT_TOKEN = Telegram Bot Token from @BotFather
+TMDB_API_KEY = TMDb API Key for fetching posters and metadata
+MONGO_URI = MongoDB Connection URI (Optional fallback to SQLite)
+POSTER_GROUP_URL = Telegram group link for restricted PM searches
+RENDER_EXTERNAL_URL = External app URL for direct image links
 PORTWeb server port (Default: 5000)
 ```
 
-##Example Environment Configuration
+# Example Environment Configuration
 
 ```
 BOT_TOKEN=YOUR_BOT_TOKEN_HERE
@@ -114,10 +114,9 @@ MONGO_URI=mongodb+srv://username:password@cluster.mongodb.net/
 POSTER_GROUP_URL=[https://t.me/+VXY_za8DNjQzYmVl](https://t.me/+VXY_za8DNjQzYmVl)
 ```
 
-​[!NOTE]
-⚠️ Never publish your actual BOT_TOKEN or TMDB_API_KEY on GitHub.
+​[!NOTE] ⚠️ Never publish your actual BOT_TOKEN or TMDB_API_KEY on GitHub.
 
-##DEPLOYMENT GUIDE
+# DEPLOYMENT GUIDE
 
 ​1. Deploy on Render
 ​<p align="left">
@@ -188,14 +187,12 @@ python bot.py
 ```
 </details>
 
-​[!CAUTION]
-​Never share your BOT_TOKEN.
+​[!CAUTION] ​Never share your BOT_TOKEN.
 ​Keep your TMDB_API_KEY and MONGO_URI private.
 ​Use environment variables for sensitive credentials.
 ​<img src="https://user-images.githubusercontent.com/73097560/115834477-dbab4500-a447-11eb-908a-139a6edaec5c.gif">
 ​
-[!WARNING]
-DON'T REMOVE MY CREDIT...
+[!WARNING] DON'T REMOVE MY CREDIT...
 ​Developer: MOHAMMED
 ​Updates: AERO UNITY
 ​Support: CODERS GROUP
