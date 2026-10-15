@@ -75,7 +75,7 @@ fsublist - View force subscription channels [Owner only]
 <img src="https://user-images.githubusercontent.com/73097560/115834477-dbab4500-a447-11eb-908a-139a6edaec5c.gif">
 
 <details>
-<summary><h2>🛠️ Development & Deployment</h2></summary>
+<summary><h2> Click Here Development & Deployment</h2></summary>
 
 Welcome to the development documentation of Universal Poster Bot.
 
@@ -97,17 +97,18 @@ MD-Poster-Bot/
 ⚙️ Environment Variables
 <details>
 <summary>👇 Click Here To Expand Variables</summary>
-``` 
-  | BOT_TOKEN |   Telegram Bot Token from @BotFather |
-| TMDB_API_KEY | TMDb API Key for fetching posters and metadata |
-| MONGO_URI | MongoDB Connection URI (Optional fallback to SQLite) |
-| POSTER_GROUP_URL | Telegram group link for restricted PM searches |
-| RENDER_EXTERNAL_URL | External app URL for direct image links |
-| PORT | Web server port (Default: 5000) |
+```text
+BOT_TOKEN = Telegram Bot Token from @BotFather
+TMDB_API_KEY = TMDb API Key for fetching posters and metadata
+MONGO_URI = MongoDB Connection URI (Optional fallback to SQLite)
+POSTER_GROUP_URL = Telegram group link for restricted PM searches
+RENDER_EXTERNAL_URL = External app URL for direct image links
+PORT = Web server port (Default: 5000)
 ```
 
 ```
-Example Environment Configuration
+#Example Environment Configuration
+
 BOT_TOKEN=YOUR_BOT_TOKEN_HERE
 TMDB_API_KEY=YOUR_TMDB_API_KEY_HERE
 MONGO_URI=mongodb+srv://username:password@cluster.mongodb.net/
@@ -115,9 +116,8 @@ POSTER_GROUP_URL=[https://t.me/+VXY_za8DNjQzYmVl](https://t.me/+VXY_za8DNjQzYmVl
 ```
 </details>
 
-
 > [!NOTE]
-> ⚠️ Never publish your actual BOT_TOKEN or TMDB_API_KEY on GitHub.
+> * ⚠️ Never publish your actual BOT_TOKEN or TMDB_API_KEY on GitHub.
 >
 
 
