@@ -40,7 +40,7 @@
 
 - 🎬 **Universal Title Search:** Search movies, TV series, anime, and regional dramas instantly.
 - 🖼️ **Logo-Driven Poster Layouts:** Automatically overlays official TMDb title logos on high-resolution landscape banners with clean blurring and padding.
-- 📱 **Dual Orientation Links:** Generates both landscape banner links and tall portrait poster preview links.
+- 📱 **Dual Orientation Links:** Generates both landscape banner links and tall portrait poster preview links, and manga poster cards.
 - 📑 **Interactive Pagination:** Browse multiple backdrop options seamlessly with inline pagination controls (`<< < 1/N > >>`).
 - 📊 **Detailed IMDb Lookup:** Fetch rich metadata cards, genres, ratings, and storylines using `/imdb`.
 - 🔒 **Force Subscription Support:** Require users to join specific update/support channels before accessing the bot.
@@ -56,21 +56,22 @@
 ### 👤 User & Owner Commands
 
 ```text
-start - Start the bot & register in database
-help - Show detailed search and usage instructions
-jhs - Generate 16:9 banner & portrait for a title
-imdb [Title] - Get detailed metadata card and IMDb ratings
-pmsearch - Toggle global PM search mode [Owner only]
-broadcast - Broadcast message with buttons to all users [Owner only]
-broadcastpin - Broadcast message, pin it, and notify users [Owner only]
-broadcastunpin - Broadcast, pin, and unpin message [Owner only]
-stats - View total users and stats list [Owner only]
-ban - Ban a user ID [Owner only]
-unban - Unban a user ID [Owner only]
-banlist - View banned users list [Owner only]
-addforcesub - Add force subscription channel [Owner only]
-removeforce - Remove force subscription channel [Owner only]
-fsublist - View force subscription channels [Owner only]
+start - sᴛᴀʀᴛ ᴛʜᴇ ʙᴏᴛ ᴀɴᴅ ᴠɪᴇᴡ ʜᴏᴍᴇ ᴍᴇɴᴜ
+help - ʜᴏᴡ ᴛᴏ sᴇᴀʀᴄʜ ᴘᴏsᴛᴇʀs & ᴜsᴇ ʙᴏᴛ
+imdb - sᴇᴀʀᴄʜ ᴍᴏᴠɪᴇ/sᴇʀɪᴇs ᴅᴇᴛᴀɪʟs ᴏɴ ɪᴍᴅʙ
+jhs - sᴇᴀʀᴄʜ ᴀɴᴅ ɢᴇɴᴇʀᴀᴛᴇ ᴄᴜsᴛᴏᴍ ᴍᴇᴅɪᴀ ᴘᴏsᴛᴇʀs
+manga - sᴇᴀʀᴄʜ ᴀɴᴅ ɢᴇɴᴇʀᴀᴛᴇ ᴍᴀɴɢᴀ/ᴍᴀɴʜᴡᴀ ᴄᴀʀᴅs
+stats - ᴄʜᴇᴄᴋ ᴛᴏᴛᴀʟ ᴜɴɪǫᴜᴇ ʙᴏᴛ ᴜsᴇʀs (ᴀᴅᴍɪɴ)
+addforcesub - ᴀᴅᴅ ᴀ ᴄʜᴀɴɴᴇʟ ᴛᴏ ғᴏʀᴄᴇ sᴜʙsᴄʀɪᴘᴛɪᴏɴ ʟɪsᴛ (ᴀᴅᴍɪɴ)
+removeforce - ʀᴇᴍᴏᴠᴇ ᴀ ᴄʜᴀɴɴᴇʟ ғʀᴏᴍ ғᴏʀᴄᴇ sᴜʙsᴄʀɪᴘᴛɪᴏN ʟɪsᴛ (ᴀᴅᴍɪɴ)
+fsublist - ʟɪsᴛ ᴀʟʟ ᴀᴄᴛɪᴠᴇ ғᴏʀᴄᴇ sᴜʙsᴄʀɪᴘᴛɪᴏN ᴄʜᴀɴɴᴇʟs (ᴀᴅᴍɪɴ)
+ban - ʙᴀɴ ᴀ ᴜsᴇʀ ғʀᴏᴍ ᴜsɪɴɢ ᴛʜᴇ ʙᴏᴛ (ᴀᴅᴍɪɴ)
+unban - ᴜɴʙᴀɴ ᴀ ᴜsᴇʀ ғʀᴏᴍ ᴜsɪɴɢ ᴛʜᴇ ʙᴏᴛ (ᴀᴅᴍɪɴ)
+banlist - ᴠɪᴇᴡ ʟɪsᴛ ᴏғ ʙᴀɴɴᴇᴅ ᴜsᴇʀs (ᴀᴅᴍɪɴ)
+pmsearch - ᴛᴏɢɢʟᴇ ᴘᴍ sᴇᴀʀᴄʜ ᴏɴ ᴏʀ ᴏғғ (ᴀᴅᴍɪɴ)
+broadcast - ʙʀᴏᴀᴅᴄᴀsᴛ ᴀ ᴍᴇssᴀɢᴇ ᴛᴏ ᴀʟʟ ᴜsᴇʀs (ᴀᴅᴍɪɴ)
+broadcastpin - ʙʀᴏᴀᴅᴄᴀsᴛ ᴀ ᴍᴇssᴀɢᴇ ᴀɴᴅ ᴘɪɴ ɪᴛ (ᴀᴅᴍɪɴ)
+broadcastunpin - ʙʀᴏᴀᴅᴄᴀsᴛ, ᴘɪɴ, ᴀɴᴅ ᴜɴᴘɪɴ ᴀ ᴍᴇssᴀɢᴇ (ᴀᴅᴍɪɴ)
 ```
 
 <img src="https://user-images.githubusercontent.com/73097560/115834477-dbab4500-a447-11eb-908a-139a6edaec5c.gif">
