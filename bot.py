@@ -1,9 +1,3 @@
-# ------------------------ #
-# Don't Remove My Credits
-# Owner: @Mr_Mohammed_29
-# Updates: @Aero_Unity 
-# Support : @Coders_Grp 
-# ------------------------ #
 
 import os
 import io
@@ -11,8 +5,8 @@ import re
 import html
 import telebot
 import requests
+import database 
 import threading
-import database
 
 # ------------------------ #
 # Don't Remove My Credits
@@ -23,7 +17,7 @@ import database
 
 from flask import Flask, send_file, request
 from telebot.types import InlineKeyboardMarkup, InlineKeyboardButton
-from PIL import Image, ImageDraw, ImageFont, ImageFilter
+from PIL import Image, ImageDraw, ImageFont,ImageFilter
 
 # ------------------------ #
 # Don't Remove My Credits
@@ -34,15 +28,7 @@ from PIL import Image, ImageDraw, ImageFont, ImageFilter
 
 BOT_TOKEN = os.environ.get("BOT_TOKEN")
 TMDB_API_KEY = os.environ.get("TMDB_API_KEY")
-POSTER_GROUP_URL = os.environ.get("POSTER_GROUP_URL", "https://t.me/+VXY_za8DNjQzYmVl") #replace your group link
-OWNER_ID = 7284759394 #replace your Telegram ID
-
-# ------------------------ #
-# Don't Remove My Credits
-# Owner: @Mr_Mohammed_29
-# Updates: @Aero_Unity 
-# Support : @Coders_Grp 
-# ------------------------ #
+POSTER_GROUP_URL = os.environ.get("POSTER_GROUP_URL", "https://t.me/+VXY_za8DNjQzYmVl")
 
 bot = telebot.TeleBot(BOT_TOKEN)
 app = Flask(__name__)
@@ -60,6 +46,7 @@ SEARCH_CACHE = {}
 IMDB_SEARCH_CACHE = {}
 CACHE_DIR = "poster_cache"
 os.makedirs(CACHE_DIR, exist_ok=True)
+OWNER_ID = 7284759394 #replace your Telegram ID 
 
 # ------------------------ #
 # Don't Remove My Credits
@@ -106,7 +93,7 @@ def serve_poster(item_id):
     if os.path.exists(fallback_path):
         return send_file(fallback_path, mimetype='image/jpeg')
         
-    return "poster not found or expired, Contact to Owner [#@Mr_Mohammed_29]", 404
+    return "poster not found or expired.", 404
 
 # ------------------------ #
 # Don't Remove My Credits
@@ -297,6 +284,7 @@ def handle_all_callbacks(call):
         bot.answer_callback_query(call.id, " you are banned from using this bot.", show_alert=True)
         return
     
+    # 1. Handle Poster Pagination
     if call.data.startswith("p_") or call.data == "noop":
         if call.data == "noop":
             bot.answer_callback_query(call.id)
@@ -321,6 +309,7 @@ def handle_all_callbacks(call):
         bot.answer_callback_query(call.id)
         return
 
+    # 2. Handle IMDb Selection & Close Button
     if call.data.startswith("imdb_select_") or call.data == "imdb_close":
         try:
             bot.answer_callback_query(call.id)
@@ -388,13 +377,13 @@ def handle_all_callbacks(call):
                 poster_url = f"https://image.tmdb.org/t/p/w500{poster_path}" if poster_path else None
 
                 caption_lines = [
-                    f"🎬 <b>{html.escape(title)}</b> [{year}]",
-                    f"⭐ <b>IMDb Rating:</b> {rating}",
-                    f"📅 <b>Release Info:</b> {rel_info}",
-                    f"🎭 <b>Genre:</b> {genre_str}",
-                    f"🌐 <b>Language:</b> {lang_str}",
-                    f"🏳️ <b>Country of Origin:</b> {country_str}\n",
-                    f"📖 <b>Storyline:</b>\n<i>{html.escape(overview)}</i>"
+                    f"• 🎬 <b>{html.escape(title)}</b> [{year}]",
+                    f"• ⭐ <b>IMDb Rating:</b> {rating}",
+                    f"• 📅 <b>Release Info:</b> {rel_info}",
+                    f"• 🎭 <b>Genre:</b> {genre_str}",
+                    f"• 🌐 <b>Language:</b> {lang_str}",
+                    f"• 🏳️ <b>Country of Origin:</b> {country_str}\n",
+                    f"• 📖 <b>Storyline:</b>\n<i>{html.escape(overview)}</i>"
                 ]
                 caption_text = "\n".join(caption_lines)
 
@@ -521,7 +510,6 @@ def handle_all_callbacks(call):
 # Support : @Coders_Grp 
 # ------------------------ #
 
-# --- Admin-Only Commands --- #
 @bot.message_handler(commands=['stats'])
 def bot_stats(message):
     if message.from_user.id != OWNER_ID:
@@ -659,13 +647,6 @@ def remove_force_sub(message):
     else:
         bot.reply_to(message, " <code>/removeforce @channelusername</code>", parse_mode="HTML")
 
-# ------------------------ #
-# Don't Remove My Credits
-# Owner: @Mr_Mohammed_29
-# Updates: @Aero_Unity 
-# Support : @Coders_Grp 
-# ------------------------ #
-
 @bot.message_handler(commands=['fsublist'])
 def list_force_sub(message):
     if message.from_user.id != OWNER_ID:
@@ -705,7 +686,7 @@ def broadcast_message_handler(message):
 
     for uid, _ in users:
         try:
-            # Correct TeleBot syntax for copying any message type (text, photo, media, etc.)
+           
             bot.copy_message(chat_id=uid, from_chat_id=message.chat.id, message_id=reply_msg.message_id, reply_markup=reply_msg.reply_markup)
             success += 1
         except Exception as e:
@@ -836,41 +817,61 @@ def get_tmdb_logo_url(item_id, media_type):
 # Support : @Coders_Grp 
 # ------------------------ #
 
-def add_title_overlay(image_bytes, title_text="", logo_url=None):
+def add_title_overlay(image_bytes, title_text="", logo_url=None, position="center"):
     orig_img = Image.open(io.BytesIO(image_bytes)).convert("RGBA")
     target_width, target_height = 1280, 720
-
+    
     if orig_img.width / orig_img.height < 1.33:
         bg = orig_img.resize((target_width, target_height), Image.Resampling.LANCZOS)
         bg = bg.filter(ImageFilter.GaussianBlur(15))
-        
         portrait = orig_img.copy()
         portrait.thumbnail((target_width, target_height), Image.Resampling.LANCZOS)
-        
-        x_offset = (target_width - portrait.width) // 2
-        y_offset = (target_height - portrait.height) // 2
-        bg.paste(portrait, (x_offset, y_offset), portrait if portrait.mode == 'RGBA' else None)
+        bg.paste(portrait, ((target_width - portrait.width) // 2, (target_height - portrait.height) // 2), portrait if portrait.mode == 'RGBA' else None)
         image = bg
     else:
         image = orig_img.resize((target_width, target_height), Image.Resampling.LANCZOS)
     
     if logo_url:
         try:
-            logo_res = session.get(logo_url, timeout=5)
+            headers = {"User-Agent": "Mozilla/5.0"}
+            logo_res = session.get(logo_url, headers=headers, timeout=5)
             if logo_res.status_code == 200:
                 logo_img = Image.open(io.BytesIO(logo_res.content)).convert("RGBA")
-                max_logo_w = int(target_width * 0.6)
-                max_logo_h = int(target_height * 0.3)
-                logo_img.thumbnail((max_logo_w, max_logo_h), Image.Resampling.LANCZOS)
+                max_logo_w = int(target_width * 0.55)
+                max_logo_h = int(target_height * 0.35)
+                
+                w_percent = (max_logo_w / float(logo_img.size[0]))
+                h_size = int(float(logo_img.size[1]) * float(w_percent))
+                
+                if h_size > max_logo_h:
+                    h_percent = (max_logo_h / float(logo_img.size[1]))
+                    max_logo_w = int(float(logo_img.size[0]) * float(h_percent))
+                    h_size = max_logo_h
+                    
+                logo_img = logo_img.resize((max_logo_w, h_size), Image.Resampling.LANCZOS)
                 logo_w, logo_h = logo_img.size
-                x = int((target_width - logo_w) / 2)
-                y = int(target_height - logo_h - (target_height * 0.08))
-                image.paste(logo_img, (x, y), logo_img)
-        except Exception:
-            pass
+                
+                margin_x = int(target_width * 0.08)
+                margin_y = int(target_height * 0.08)
+                
+                pos = position.lower()
+                if pos == "left":
+                    x, y = margin_x, (target_height - logo_h) // 2
+                elif pos == "right":
+                    x, y = target_width - logo_w - margin_x, (target_height - logo_h) // 2
+                elif pos in ["up", "top"]:
+                    x, y = (target_width - logo_w) // 2, margin_y
+                elif pos in ["down", "bottom"]:
+                    x, y = (target_width - logo_w) // 2, target_height - logo_h - margin_y
+                else:
+                    x, y = (target_width - logo_w) // 2, (target_height - logo_h) // 2
+                
+                image.paste(logo_img, (x, y), mask=logo_img)
+        except Exception as e:
+            print(f"Error applying logo overlay: {e}")
 
     output = io.BytesIO()
-    image.convert("RGB").save(output, format="JPEG", quality=92)
+    image.convert("RGB").save(output, format="JPEG", quality=95)
     output.seek(0)
     return output
 
@@ -902,10 +903,18 @@ def build_poster_page(search_id, index=0):
     endpoint = "movie" if media_type == "movie" else "tv"
     details_url = f"https://api.themoviedb.org/3/{endpoint}/{item_id}?api_key={TMDB_API_KEY}"
     languages_list = []
+    genre_list = []
+    
     try:
         det_res = session.get(details_url, timeout=4)
         if det_res.status_code == 200:
             det_data = det_res.json()
+            
+            for g in det_data.get("genres", []):
+                genre_name = g.get("name")
+                if genre_name:
+                    genre_list.append(genre_name)
+                    
             spoken = det_data.get("spoken_languages", [])
             for lang in spoken:
                 name = lang.get("english_name") or lang.get("name")
@@ -913,6 +922,8 @@ def build_poster_page(search_id, index=0):
                     languages_list.append(name)
     except Exception:
         pass
+
+    genres = ", ".join(genre_list) if genre_list else "Action, Adventure"
 
     if not languages_list:
         languages_list = [item.get("original_language", "en").upper()]
@@ -938,7 +949,10 @@ def build_poster_page(search_id, index=0):
 
         cache_key = f"{item_id}_s{season_number}_idx{index}" if season_number else f"{item_id}_idx{index}"
 
-        processed_image_io = add_title_overlay(img_response.content, title, logo_url)
+        positions_list = ["center", "left", "right", "up", "down"]
+        assigned_position = positions_list[index % len(positions_list)]
+
+        processed_image_io = add_title_overlay(img_response.content, title, logo_url, position=assigned_position)
         landscape_file_path = os.path.join(CACHE_DIR, f"{cache_key}.jpg")
         with open(landscape_file_path, "wb") as f:
             f.write(processed_image_io.getvalue())
@@ -970,6 +984,7 @@ def build_poster_page(search_id, index=0):
         
         caption_lines = [
             f"• <b>Tɪᴛʟᴇ : {safe_title} ({year})</b>",
+            f"• <b>Gᴇɴʀᴇ : {genres}</b>",
             f"• <b>Lᴀɴɢᴜᴀɢᴇ : {language_str}</b>",
             f"• <b>Rᴇsᴏʟᴜᴛɪᴏɴs : {resolution_str}</b>",
             f"• <b>Lɪɴᴋ :</b> <a href=\"{landscape_url}\"><b>Dɪʀᴇᴄᴛ Lɪɴᴋ</b></a>",
@@ -1032,13 +1047,6 @@ def search_poster(message):
             markup.add(group_btn)
             bot.reply_to(message, access_denied_text, parse_mode="HTML", reply_markup=markup)
             return
-
-# ------------------------ #
-# Don't Remove My Credits
-# Owner: @Mr_Mohammed_29
-# Updates: @Aero_Unity 
-# Support : @Coders_Grp 
-# ------------------------ #
 
     raw_query = message.text.strip()
     if raw_query.startswith("/p "):
@@ -1113,6 +1121,7 @@ def search_poster(message):
     results = []
 
     try:
+ 
         if season_number or lang_filter in ["ko", "zh", "ja"]:
             tv_url = f"https://api.themoviedb.org/3/search/tv?api_key={TMDB_API_KEY}&query={requests.utils.quote(clean_query)}{first_air_year_param}{lang_param}"
             tv_res = session.get(tv_url, timeout=5)
@@ -1128,7 +1137,7 @@ def search_poster(message):
                 results = res.json().get("results", [])
                 for r in results:
                     r["media_type"] = "movie"
-            
+
             if not results and (year_param or lang_param):
                 fallback_url = f"https://api.themoviedb.org/3/search/movie?api_key={TMDB_API_KEY}&query={requests.utils.quote(clean_query)}"
                 fallback_res = session.get(fallback_url, timeout=5)
@@ -1262,7 +1271,7 @@ def imdb_command(message):
         valid_results = [item for item in results if item.get("title") or item.get("name")]
         
         if not valid_results:
-            bot.edit_message_text("❌ <b>No titles found for your search!</b>", message.chat.id, status_msg.message_id, parse_mode="HTML")
+            bot.edit_message_text("‼️ <b>No titles found for your search!</b>", message.chat.id, status_msg.message_id, parse_mode="HTML")
             return
 
         search_id = str(message.message_id)
@@ -1278,7 +1287,7 @@ def imdb_command(message):
             callback_data = f"imdb_select_{search_id}_{idx}"
             markup.add(InlineKeyboardButton(text=button_text, callback_data=callback_data))
 
-        markup.add(InlineKeyboardButton(text="❌ Close", callback_data="imdb_close"))
+        markup.add(InlineKeyboardButton(text="• Cʟᴏsᴇ •", callback_data="imdb_close"))
 
         bot.delete_message(message.chat.id, status_msg.message_id)
         bot.send_message(
@@ -1290,6 +1299,129 @@ def imdb_command(message):
 
     except Exception as e:
         bot.edit_message_text(f"⚠️ <b>An error occurred:</b> <code>{html.escape(str(e))}</code>", message.chat.id, status_msg.message_id, parse_mode="HTML")
+
+# ------------------------ #
+# Don't Remove My Credits
+# Owner: @Mr_Mohammed_29
+# Updates: @Aero_Unity 
+# Support : @Coders_Grp 
+# ------------------------ #
+
+@bot.message_handler(commands=['jhs', 'posters'])
+def movie_poster_handler(message):
+    query = message.text.replace("/jhs", "").replace("/posters", "").strip()
+    
+    if not query:
+        bot.reply_to(
+            message, 
+            "<b>Usage:</b> /jhs [Search Query]\n<i>Example:</i> /jhs Iron man", 
+            parse_mode="HTML"
+        )
+        return
+
+    search_url = f"https://api.themoviedb.org/3/search/multi?api_key={TMDB_API_KEY}&query={requests.utils.quote(query)}"
+    response = requests.get(search_url).json()
+    results = response.get("results", [])
+
+    if not results:
+        bot.reply_to(message, f"‼️ Nᴏ Rᴇsᴜʟᴛs Fᴏᴜɴᴅ Fᴏʀ ʏᴏᴜʀ <b>{query}</b>", parse_mode="HTML")
+        return
+
+    item = results[0]
+    media_type = item.get("media_type", "movie")
+    item_id = str(item.get("id"))
+    title = item.get("title") or item.get("name") or "Unknown Title"
+    
+    backdrop_path = item.get("backdrop_path")
+    poster_path = item.get("poster_path")
+
+    if not backdrop_path and not poster_path:
+        bot.reply_to(message, f"⚠️ Found <b>{title}</b>, but no image banners are available.", parse_mode="HTML")
+        return
+
+    genres_list = []
+    endpoint = "movie" if media_type == "movie" else "tv"
+    details_url = f"https://api.themoviedb.org/3/{endpoint}/{item_id}?api_key={TMDB_API_KEY}"
+    try:
+        det_res = session.get(details_url, timeout=4)
+        if det_res.status_code == 200:
+            det_data = det_res.json()
+            for g in det_data.get("genres", []):
+                if g.get("name"):
+                    genres_list.append(g.get("name"))
+    except Exception:
+        pass
+
+    genres = ", ".join(genres_list) if genres_list else "Action, Adventure"
+
+    raw_backdrop_url = f"https://image.tmdb.org/t/p/original{backdrop_path}" if backdrop_path else f"https://image.tmdb.org/t/p/original{poster_path}"
+    poster_url_original = f"https://image.tmdb.org/t/p/original{poster_path}" if poster_path else raw_backdrop_url
+    logo_url = get_tmdb_logo_url(item_id, media_type)
+
+    positions_list = ["center", "left", "right", "up", "down"]
+    assigned_position = positions_list[int(item_id) % len(positions_list)]
+
+    cache_key = f"{item_id}_jhs"
+    landscape_file_path = os.path.join(CACHE_DIR, f"{cache_key}.jpg")
+    portrait_file_path = os.path.join(CACHE_DIR, f"{cache_key}_portrait.jpg")
+
+    try:
+        img_response = session.get(raw_backdrop_url, timeout=8)
+        if img_response.status_code == 200:
+            # Generate and save overlay banner (with TMDb logo and dynamic position)
+            processed_io = add_title_overlay(img_response.content, title, logo_url, position=assigned_position)
+            with open(landscape_file_path, "wb") as f:
+                f.write(processed_io.getvalue())
+        
+        port_res = session.get(poster_url_original, timeout=8)
+        if port_res.status_code == 200:
+            with open(portrait_file_path, "wb") as f:
+                f.write(port_res.content)
+    except Exception as e:
+        print(f"Error caching images: {e}")
+
+    app_url = os.environ.get("RENDER_EXTERNAL_URL") or request.host_url.rstrip('/')
+    banner_url = f"{app_url}/poster/{cache_key}"
+    portrait_url = f"{app_url}/poster/{cache_key}?type=portrait"
+
+    languages = item.get("original_language", "en").upper()
+
+    caption = (
+        f"• 🎬 <b>Tɪᴛʟᴇ : {html.escape(title)}</b>\n"
+        f"• 🏛️ <b>Tʏᴘᴇ : </b> {media_type.upper()}\n"
+        f"• 🎭 <b>Gᴇɴʀᴇ : </b> {genres}\n"
+        f"• 🌐 <b>Lᴀɴɢᴜᴀɢᴇ :</b> {languages}\n\n"
+        f"• 🖼️ <b>Bᴀɴɴᴇʀ :</b> <a href='{banner_url}'>Lɪɴᴋ</a>\n"
+        f"• 🖼️ <b>Pᴏsᴛᴇʀ :</b> <a href='{portrait_url}'>Lɪɴᴋ</a>"
+    )
+
+    markup = InlineKeyboardMarkup()
+    markup.row(
+        InlineKeyboardButton("• Bᴀɴɴᴇʀ •", url=banner_url),
+        InlineKeyboardButton("• Pᴏsᴛᴇʀ •", url=portrait_url)
+    )
+
+    try:
+       
+        if os.path.exists(landscape_file_path):
+            with open(landscape_file_path, 'rb') as photo:
+                bot.send_photo(
+                    chat_id=message.chat.id,
+                    photo=photo,
+                    caption=caption,
+                    parse_mode="HTML",
+                    reply_markup=markup
+                )
+        else:
+            bot.send_photo(
+                chat_id=message.chat.id,
+                photo=banner_url,
+                caption=caption,
+                parse_mode="HTML",
+                reply_markup=markup
+            )
+    except Exception as e:
+        bot.reply_to(message, f"❌ Error sending poster: {e}", parse_mode="HTML")
 
 # ------------------------ #
 # Don't Remove My Credits
