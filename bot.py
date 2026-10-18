@@ -1,3 +1,9 @@
+# ------------------------ #
+# Don't Remove My Credits
+# Owner: @Mr_Mohammed_29
+# Updates: @Aero_Unity 
+# Support : @Coders_Grp 
+# ------------------------ #
 
 import os
 import io
@@ -284,7 +290,6 @@ def handle_all_callbacks(call):
         bot.answer_callback_query(call.id, " you are banned from using this bot.", show_alert=True)
         return
     
-    # 1. Handle Poster Pagination
     if call.data.startswith("p_") or call.data == "noop":
         if call.data == "noop":
             bot.answer_callback_query(call.id)
@@ -309,7 +314,6 @@ def handle_all_callbacks(call):
         bot.answer_callback_query(call.id)
         return
 
-    # 2. Handle IMDb Selection & Close Button
     if call.data.startswith("imdb_select_") or call.data == "imdb_close":
         try:
             bot.answer_callback_query(call.id)
