@@ -58,6 +58,7 @@
 ```text
 start - Start the bot & register in database
 help - Show detailed search and usage instructions
+jhs - Generate 16:9 banner & portrait for a title
 imdb [Title] - Get detailed metadata card and IMDb ratings
 pmsearch - Toggle global PM search mode [Owner only]
 broadcast - Broadcast message with buttons to all users [Owner only]
