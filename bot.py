@@ -23,7 +23,7 @@ import threading
 
 from flask import Flask, send_file, request
 from telebot.types import InlineKeyboardMarkup, InlineKeyboardButton
-from PIL import Image, ImageDraw, ImageFont,ImageFilter
+from PIL import Image, ImageDraw, ImageFont,ImageFilter, ImageOps
 
 # ------------------------ #
 # Don't Remove My Credits
@@ -88,17 +88,17 @@ def home():
 def serve_poster(item_id):
     """Flask route to reliably serve the cached poster image file (landscape or portrait)."""
     poster_type = request.args.get('type', 'landscape')
-    
+
     filename = f"{item_id}_portrait.jpg" if poster_type == 'portrait' else f"{item_id}.jpg"
     file_path = os.path.join(CACHE_DIR, filename)
-    
+
     if os.path.exists(file_path):
         return send_file(file_path, mimetype='image/jpeg')
-        
+
     fallback_path = os.path.join(CACHE_DIR, f"{item_id}.jpg")
     if os.path.exists(fallback_path):
         return send_file(fallback_path, mimetype='image/jpeg')
-        
+
     return "poster not found or expired.", 404
 
 # ------------------------ #
@@ -134,9 +134,9 @@ def send_fsub_prompt(chat_id):
     for channel in channels:
         channel_name = channel.replace("@", "")
         markup.add(telebot.types.InlineKeyboardButton(text=f"• Jᴏɪɴ {channel} •", url=f"https://t.me/{channel_name}"))
-    
+
     markup.add(telebot.types.InlineKeyboardButton(text="• ᴄʜᴇᴄᴋ sᴜʙsᴄʀɪᴘᴛɪᴏɴ •", callback_data="check_fsub"))
-    
+
     fsub_text = (
         " <b>ᴀᴄᴄᴇss ᴅᴇɴɪᴇᴅ</b>\n\n"
         "<b>›› ‼️ ʟᴏᴏᴋs ʟɪᴋᴇ ʏᴏᴜ ʜᴀᴠᴇɴ'ᴛ ᴊᴏɪɴᴇᴅ ᴛᴏ ᴏᴜʀ ᴄʜᴀɴɴᴇʟs ʏᴇᴛ, sᴜʙsᴄʀɪʙᴇ ɴᴏw...</b>\n"
@@ -215,11 +215,11 @@ def send_welcome(message):
     user_id = message.from_user.id
     first_name = message.from_user.first_name or "user"
     database.add_user(user_id, first_name)
-    
+
     if database.is_banned(user_id):
         bot.reply_to(message, " <b>you are banned from using this bot.</b>", parse_mode="HTML")
         return
-    
+
     if not is_user_member(user_id):
         send_fsub_prompt(message.chat.id)
         return
@@ -230,15 +230,15 @@ def send_welcome(message):
         "𝖺𝗇𝖽 𝗂 𝗐𝗂𝗅𝗅 𝗀𝖾𝗇𝖾𝗋𝖺𝗍𝖾 𝗍𝗁𝖾 𝗉𝗈𝗌𝗍𝖾𝗋 𝗅𝖺𝗒𝗈𝗎𝗍 𝖿𝗈𝗋 𝗒𝗈𝗎</b>\n\n"
         "<b>Pᴏᴡᴇʀᴇᴅ Bʏ : <a href=\"https://t.me/Aero_Unity\">Aᴇʀᴏ Uɴɪᴛʏ</a></b>"
     )
-    
+
     markup = telebot.types.InlineKeyboardMarkup(row_width=2)
     about_btn = telebot.types.InlineKeyboardButton(text="• Aʙᴏᴜᴛ •", callback_data="btn_about")
     updates_btn = telebot.types.InlineKeyboardButton(text="• Uᴘᴅᴀᴛᴇs •", url="https://t.me/Aero_Unity")
     owner_btn = telebot.types.InlineKeyboardButton(text="• Oᴡɴᴇʀ •", url="https://t.me/Mr_Mohammed_29")
-    
+
     markup.row(about_btn, updates_btn)
     markup.row(owner_btn)
-    
+
     try:
         bot.send_photo(message.chat.id, START_IMAGE_URL, caption=welcome_text, parse_mode="HTML", reply_markup=markup)
     except Exception:
@@ -254,7 +254,7 @@ def send_welcome(message):
 @bot.message_handler(commands=['pmsearch'])
 def toggle_pm_search(message):
     user_id = message.from_user.id
-    
+
     if user_id != OWNER_ID:
         bot.reply_to(message, " <b>ᴀᴄᴄᴇss ᴅᴇɴɪᴇᴅ: ʏᴏᴜ ᴀʀᴇ ɴᴏᴛ ᴍʏ sᴇɴᴘᴀɪ</b>", parse_mode="HTML")
         return
@@ -313,7 +313,7 @@ def handle_all_callbacks(call):
                 
         bot.answer_callback_query(call.id)
         return
-
+        
     if call.data.startswith("imdb_select_") or call.data == "imdb_close":
         try:
             bot.answer_callback_query(call.id)
@@ -392,7 +392,7 @@ def handle_all_callbacks(call):
                 caption_text = "\n".join(caption_lines)
 
                 markup = InlineKeyboardMarkup()
-                markup.add(InlineKeyboardButton(text="📺 IMDb Page", url=imdb_link))
+                markup.add(InlineKeyboardButton(text="• ɪᴍᴅʙ ɪᴍᴀɢᴇ •", url=imdb_link))
 
                 try:
                     bot.delete_message(call.message.chat.id, call.message.message_id)
@@ -416,6 +416,87 @@ def handle_all_callbacks(call):
                     )
         except Exception as e:
             print(f"IMDb details error: {e}")
+        return
+
+    if call.data == "cancel_session":
+        try:
+            bot.answer_callback_query(call.id, "Session cancelled.")
+        except Exception:
+            pass
+        try:
+            bot.delete_message(call.message.chat.id, call.message.message_id)
+        except Exception:
+            pass
+        return
+
+    if call.data.startswith("media_card_"):
+        parts = call.data.split("_")
+        search_id = parts[2]
+        target_index = int(parts[3])
+
+        data = SEARCH_CACHE.get(search_id)
+        if not data:
+            try:
+                bot.answer_callback_query(call.id, "Session expired, please search again.", show_alert=True)
+            except Exception:
+                pass
+            return
+
+        artworks = data["artworks"]
+        posters = data["posters"]
+        total_pages = len(artworks)
+        current_index = target_index % total_pages
+
+        caption_text = (
+            f"<b>{html.escape(data['title'])}</b> ❞\n\n"
+            f"» <b>Type:</b> {data.get('type', 'Manhwa')}\n"
+            f"» <b>Average Rating:</b> {data['rating']}\n"
+            f"» <b>Status:</b> {data['status']}\n"
+            f"» <b>Chapters:</b> {data['chapters']}\n"
+            f"» <b>Genres:</b> {html.escape(data['genres'])}\n\n"
+            f"▶ <u><b>SYNOPSIS</b></u>\n"
+            f"<b>➔</b> <i>{html.escape(data['synopsis'][:400])}...</i> ❞"
+        )
+
+        try:
+            img_bytes = session.get(artworks[current_index], timeout=5).content
+            p_bytes_list = []
+            for p_url in posters[:2]:
+                try:
+                    p_bytes_list.append(session.get(p_url, timeout=4).content)
+                except Exception:
+                    p_bytes_list.append(img_bytes)
+
+            genres_list = [g.strip() for g in data["genres"].split(",")]
+            card_io = generate_custom_media_card(
+                img_bytes, p_bytes_list, data["title"], genres_list,
+                data["synopsis"], logo_url=data["logo_url"], branding="Manga Aero"
+            )
+
+            markup = InlineKeyboardMarkup()
+            prev_idx = (current_index - 1) % total_pages
+            next_idx = (current_index + 1) % total_pages
+
+            markup.row(
+                InlineKeyboardButton(text="◀ ᴘʀᴇᴠ •", callback_data=f"media_card_{search_id}_{prev_idx}"),
+                InlineKeyboardButton(text=f"{current_index+1:02d}/{total_pages:02d}", callback_data="noop"),
+                InlineKeyboardButton(text="• ɴᴇxᴛ ▶", callback_data=f"media_card_{search_id}_{next_idx}")
+            )
+            markup.row(InlineKeyboardButton(text="• ᴄᴀɴᴄᴇʟ •", callback_data="cancel_session"))
+
+            bot.edit_message_media(
+                chat_id=call.message.chat.id,
+                message_id=call.message.message_id,
+                media=telebot.types.InputMediaPhoto(card_io, caption=caption_text, parse_mode="HTML"),
+                reply_markup=markup
+            )
+        except Exception as e:
+            print(f"Media card update error: {e}")
+
+        try:
+            bot.answer_callback_query(call.id)
+        except Exception:
+            pass
         return
 
     if call.data == "check_fsub":
@@ -519,15 +600,15 @@ def bot_stats(message):
     if message.from_user.id != OWNER_ID:
         bot.reply_to(message, "<b>ᴀᴄᴄᴇss ᴅᴇɴɪᴇᴅ: ʏᴏᴜ ᴀʀᴇ ɴᴏᴛ ᴍʏ sᴇɴᴘᴀɪ </b>", parse_mode="HTML")
         return
-    
+
     users = database.get_all_users()
     total_users = len(users)
-    
+
     user_list_str = ""
     for idx, (uid, fname) in enumerate(users[:25], 1):
         safe_fname = html.escape(fname or "user")
         user_list_str += f"{idx}. {safe_fname} (<code>{uid}</code>)\n"
-    
+
     if total_users > 25:
         user_list_str += f"\n<i>...and {total_users - 25} more users.</i>"
 
@@ -675,22 +756,22 @@ def broadcast_message_handler(message):
     if message.from_user.id != OWNER_ID:
         bot.reply_to(message, "<b> ʏᴏᴜ ᴀʀᴇ ɴᴏᴛ ᴍʏ sᴇɴᴘᴀɪ</b>", parse_mode="HTML")
         return
-        
+
     if not message.reply_to_message:
         bot.reply_to(message, "⚠️ Please <b>reply to a message</b> to broadcast it.", parse_mode="HTML")
         return
 
     reply_msg = message.reply_to_message
     users = database.get_all_users()
-    
+
     success = 0
     failed = 0
-    
+
     status_msg = bot.reply_to(message, "🚀 <b>Broadcast started...</b> Please wait.", parse_mode="HTML")
 
     for uid, _ in users:
         try:
-           
+
             bot.copy_message(chat_id=uid, from_chat_id=message.chat.id, message_id=reply_msg.message_id, reply_markup=reply_msg.reply_markup)
             success += 1
         except Exception as e:
@@ -718,17 +799,17 @@ def broadcast_pin_handler(message):
     if message.from_user.id != OWNER_ID:
         bot.reply_to(message, "<b>ʏᴏᴜ ᴀʀᴇ ɴᴏᴛ ᴍʏ sᴇɴᴘᴀɪ</b>", parse_mode="HTML")
         return
-        
+
     if not message.reply_to_message:
         bot.reply_to(message, "⚠️ Please <b>reply to a message</b> to broadcast and pin it.", parse_mode="HTML")
         return
 
     reply_msg = message.reply_to_message
     users = database.get_all_users()
-    
+
     success = 0
     failed = 0
-    
+
     status_msg = bot.reply_to(message, " <b>Broadcast & Pin started...</b> Please wait.", parse_mode="HTML")
 
     for uid, _ in users:
@@ -761,17 +842,17 @@ def broadcast_unpin_handler(message):
     if message.from_user.id != OWNER_ID:
         bot.reply_to(message, "<b>ʏᴏᴜ ᴀʀᴇ ɴᴏᴛ ᴍʏ sᴇɴᴘᴀɪ</b>", parse_mode="HTML")
         return
-        
+
     if not message.reply_to_message:
         bot.reply_to(message, "⚠️ Please <b>reply to a message</b> to broadcast, pin, and unpin it.", parse_mode="HTML")
         return
 
     reply_msg = message.reply_to_message
     users = database.get_all_users()
-    
+
     success = 0
     failed = 0
-    
+
     status_msg = bot.reply_to(message, "🚀 <b>Broadcast & Unpin started... Please wait.</b>", parse_mode="HTML")
 
     for uid, _ in users:
@@ -824,7 +905,7 @@ def get_tmdb_logo_url(item_id, media_type):
 def add_title_overlay(image_bytes, title_text="", logo_url=None, position="center"):
     orig_img = Image.open(io.BytesIO(image_bytes)).convert("RGBA")
     target_width, target_height = 1280, 720
-    
+
     if orig_img.width / orig_img.height < 1.33:
         bg = orig_img.resize((target_width, target_height), Image.Resampling.LANCZOS)
         bg = bg.filter(ImageFilter.GaussianBlur(15))
@@ -834,7 +915,7 @@ def add_title_overlay(image_bytes, title_text="", logo_url=None, position="cente
         image = bg
     else:
         image = orig_img.resize((target_width, target_height), Image.Resampling.LANCZOS)
-    
+
     if logo_url:
         try:
             headers = {"User-Agent": "Mozilla/5.0"}
@@ -843,21 +924,21 @@ def add_title_overlay(image_bytes, title_text="", logo_url=None, position="cente
                 logo_img = Image.open(io.BytesIO(logo_res.content)).convert("RGBA")
                 max_logo_w = int(target_width * 0.55)
                 max_logo_h = int(target_height * 0.35)
-                
+
                 w_percent = (max_logo_w / float(logo_img.size[0]))
                 h_size = int(float(logo_img.size[1]) * float(w_percent))
-                
+
                 if h_size > max_logo_h:
                     h_percent = (max_logo_h / float(logo_img.size[1]))
                     max_logo_w = int(float(logo_img.size[0]) * float(h_percent))
                     h_size = max_logo_h
-                    
+
                 logo_img = logo_img.resize((max_logo_w, h_size), Image.Resampling.LANCZOS)
                 logo_w, logo_h = logo_img.size
-                
+
                 margin_x = int(target_width * 0.08)
                 margin_y = int(target_height * 0.08)
-                
+
                 pos = position.lower()
                 if pos == "left":
                     x, y = margin_x, (target_height - logo_h) // 2
@@ -869,7 +950,7 @@ def add_title_overlay(image_bytes, title_text="", logo_url=None, position="cente
                     x, y = (target_width - logo_w) // 2, target_height - logo_h - margin_y
                 else:
                     x, y = (target_width - logo_w) // 2, (target_height - logo_h) // 2
-                
+
                 image.paste(logo_img, (x, y), mask=logo_img)
         except Exception as e:
             print(f"Error applying logo overlay: {e}")
@@ -879,6 +960,116 @@ def add_title_overlay(image_bytes, title_text="", logo_url=None, position="cente
     output.seek(0)
     return output
 
+# ------------------------ #
+# Don't Remove My Credits
+# Owner: @Mr_Mohammed_29
+# Updates: @Aero_Unity 
+# Support : @Coders_Grp 
+# ------------------------ #
+
+def generate_custom_media_card(poster_bytes, portrait_bytes_list, title, genres, synopsis, logo_url=None, branding="Manga Aero"):
+    target_w, target_h = 1280, 720
+    
+    canvas = Image.new("RGBA", (target_w, target_h), (18, 16, 16, 255))
+    
+    try:
+        raw_art = Image.open(io.BytesIO(poster_bytes)).convert("RGBA")
+        art_right = ImageOps.fit(raw_art, (680, target_h), method=Image.Resampling.LANCZOS)
+        canvas.paste(art_right, (600, 0))
+    except Exception as e:
+        print(f"Error processing artwork: {e}")
+        raw_art = None
+        
+    if raw_art:
+        bg_blur = raw_art.resize((600, target_h), Image.Resampling.LANCZOS)
+        bg_blur = bg_blur.filter(ImageFilter.GaussianBlur(25))
+        # Dark overlay tint over the blurred image
+        dark_tint = Image.new("RGBA", (600, target_h), (25, 20, 18, 210))
+        bg_blur.paste(dark_tint, (0, 0), dark_tint)
+        canvas.paste(bg_blur, (0, 0))
+    else:
+        left_panel = Image.new("RGBA", (600, target_h), (28, 24, 22, 255))
+        canvas.paste(left_panel, (0, 0))
+
+    draw = ImageDraw.Draw(canvas)
+
+    # 4. Top Header Branding
+    draw.text((40, 25), branding, fill=(255, 255, 255))
+    draw.text((170, 30), "CRUISE THROUGH INFINITE CHAPTERS", fill=(180, 180, 180))
+
+    thumb_coords = [(40, 75), (40, 210)]
+    for idx, p_bytes in enumerate(portrait_bytes_list[:2]):
+        try:
+            th_img = Image.open(io.BytesIO(p_bytes)).convert("RGBA")
+            th_img = ImageOps.fit(th_img, (100, 120), method=Image.Resampling.LANCZOS)
+            tx, ty = thumb_coords[idx]
+            canvas.paste(th_img, (tx, ty))
+            draw.rectangle([tx, ty, tx + 100, ty + 120], outline=(240, 240, 240), width=2)
+        except Exception:
+            pass
+            
+    syn_box_x1, syn_box_y1, syn_box_x2, syn_box_y2 = 155, 75, 570, 340
+    draw.rounded_rectangle([syn_box_x1, syn_box_y1, syn_box_x2, syn_box_y2], radius=12, fill=(35, 30, 28, 200), outline=(65, 55, 50), width=1)    
+    box_center_x = (syn_box_x1 + syn_box_x2) // 2
+    syn_title = "SYNOPSIS  »»»"
+    draw.text((box_center_x - (len(syn_title) * 3.5), 88), syn_title, fill=(255, 255, 255))
+
+    words = synopsis.split()
+    lines, curr_line = [], ""
+    for w in words:
+        if len(curr_line + " " + w) < 30:
+            curr_line += " " + w
+        else:
+            lines.append(curr_line.strip())
+            curr_line = w
+    if curr_line:
+        lines.append(curr_line.strip())
+
+    y_pos = 120
+    for line in lines[:5]:
+        line_w = len(line) * 6.5
+        lx = box_center_x - (line_w / 2)
+        draw.text((lx, y_pos), line, fill=(215, 215, 215))
+        y_pos += 20
+
+    sub_tag = f"»»» {branding}"
+    draw.text((box_center_x - (len(sub_tag) * 3.5), y_pos + 8), sub_tag, fill=(180, 180, 180))
+    title_box_x1, title_box_y1, title_box_x2, title_box_y2 = 40, 360, 570, 670
+    draw.rounded_rectangle([title_box_x1, title_box_y1, title_box_x2, title_box_y2], radius=15, fill=(18, 24, 32, 235), outline=(45, 58, 72), width=1) 
+    clean_title = title.upper()[:24]
+    bottom_center_x = (title_box_x1 + title_box_x2) // 2
+    title_x = bottom_center_x - (len(clean_title) * 4.5)
+    draw.text((title_x, 380), clean_title, fill=(255, 255, 255))
+
+    gx, gy = 60, 440
+    for g in genres[:6]:
+        tag_text = g.upper()[:12]
+        draw.rounded_rectangle([gx, gy, gx + 125, gy + 32], radius=16, outline=(120, 135, 150), width=1)
+        draw.text((gx + 16, gy + 8), tag_text, fill=(210, 220, 235))
+        gx += 140
+        if gx > 460:
+            gx = 60
+            gy += 45
+
+    draw.text((bottom_center_x - (len(branding) * 3.5), 625), branding.upper(), fill=(140, 140, 140))
+
+    if logo_url:
+        try:
+            logo_res = session.get(logo_url, timeout=5)
+            if logo_res.status_code == 200:
+                logo_img = Image.open(io.BytesIO(logo_res.content)).convert("RGBA")
+                logo_img.thumbnail((450, 180), Image.Resampling.LANCZOS)
+                lx = 600 + (680 - logo_img.width) // 2
+                ly = target_h - logo_img.height - 40
+                canvas.paste(logo_img, (lx, ly), mask=logo_img)
+        except Exception as e:
+            print(f"Error drawing logo overlay: {e}")
+            
+    output = io.BytesIO()
+    canvas.convert("RGB").save(output, format="JPEG", quality=95, subsampling=0)
+    output.seek(0)
+    return output
+    
 # ------------------------ #
 # Don't Remove My Credits
 # Owner: @Mr_Mohammed_29
@@ -908,17 +1099,17 @@ def build_poster_page(search_id, index=0):
     details_url = f"https://api.themoviedb.org/3/{endpoint}/{item_id}?api_key={TMDB_API_KEY}"
     languages_list = []
     genre_list = []
-    
+
     try:
         det_res = session.get(details_url, timeout=4)
         if det_res.status_code == 200:
             det_data = det_res.json()
-            
+
             for g in det_data.get("genres", []):
                 genre_name = g.get("name")
                 if genre_name:
                     genre_list.append(genre_name)
-                    
+
             spoken = det_data.get("spoken_languages", [])
             for lang in spoken:
                 name = lang.get("english_name") or lang.get("name")
@@ -942,9 +1133,9 @@ def build_poster_page(search_id, index=0):
 
     backdrop_url_original = f"https://image.tmdb.org/t/p/original{backdrop_path}" if backdrop_path else f"https://image.tmdb.org/t/p/original{poster_path}"
     poster_url_original = f"https://image.tmdb.org/t/p/original{poster_path}" if poster_path else backdrop_url_original
-    
+
     logo_url = get_tmdb_logo_url(item_id, media_type)
-    
+
     img_response = session.get(backdrop_url_original, timeout=8)
     if img_response.status_code == 200:
         img_obj = Image.open(io.BytesIO(img_response.content))
@@ -960,7 +1151,7 @@ def build_poster_page(search_id, index=0):
         landscape_file_path = os.path.join(CACHE_DIR, f"{cache_key}.jpg")
         with open(landscape_file_path, "wb") as f:
             f.write(processed_image_io.getvalue())
-            
+
         portrait_file_path = os.path.join(CACHE_DIR, f"{cache_key}_portrait.jpg")
         try:
             port_res = session.get(poster_url_original, timeout=8)
@@ -968,7 +1159,7 @@ def build_poster_page(search_id, index=0):
                 p_img = Image.open(io.BytesIO(port_res.content)).convert("RGB")
                 if p_img.width > p_img.height:
                     p_img = p_img.resize((800, 1200), Image.Resampling.LANCZOS)
-                
+
                 portrait_io = io.BytesIO()
                 p_img.save(portrait_io, format="JPEG", quality=95)
                 with open(portrait_file_path, "wb") as f:
@@ -979,13 +1170,13 @@ def build_poster_page(search_id, index=0):
         except Exception:
             with open(portrait_file_path, "wb") as f:
                 f.write(processed_image_io.getvalue())
-        
+
         app_url = os.environ.get("RENDER_EXTERNAL_URL") or request.host_url.rstrip('/')
         landscape_url = f"{app_url}/poster/{cache_key}"
         portrait_url = f"{app_url}/poster/{cache_key}?type=portrait"
-        
+
         safe_title = html.escape(title)
-        
+
         caption_lines = [
             f"• <b>Tɪᴛʟᴇ : {safe_title} ({year})</b>",
             f"• <b>Gᴇɴʀᴇ : {genres}</b>",
@@ -995,11 +1186,11 @@ def build_poster_page(search_id, index=0):
             f"• <b>Pᴏʀᴛʀᴀɪᴛ :</b> <a href=\"{portrait_url}\"><b>Cʟɪᴄᴋ Hᴇʀᴇ</b></a>\n",
             f"<b>›› Pᴏᴡᴇʀᴇᴅ Bʏ : <a href=\"https://t.me/Aero_Unity\">Aᴇʀᴏ Uɴɪᴛʏ</a></b>"
         ]
-        
+
         caption = "\n".join(caption_lines)
 
         markup = telebot.types.InlineKeyboardMarkup()
-        
+
         first_btn = telebot.types.InlineKeyboardButton(text="<<", callback_data=f"p_{search_id}_0")
         prev_idx = max(0, index - 1)
         prev_btn = telebot.types.InlineKeyboardButton(text="<", callback_data=f"p_{search_id}_{prev_idx}")
@@ -1007,9 +1198,9 @@ def build_poster_page(search_id, index=0):
         next_idx = min(total - 1, index + 1)
         next_btn = telebot.types.InlineKeyboardButton(text=">", callback_data=f"p_{search_id}_{next_idx}")
         last_btn = telebot.types.InlineKeyboardButton(text=">>", callback_data=f"p_{search_id}_{total-1}")
-        
+
         markup.row(first_btn, prev_btn, count_btn, next_btn, last_btn)
-        
+
         aero_button = telebot.types.InlineKeyboardButton(text="• ᴀᴇʀᴏ ᴜɴɪᴛʏ •", url="https://t.me/Aero_Unity")
         open_image_button = telebot.types.InlineKeyboardButton(text="• ᴏᴘᴇɴ ɪᴍᴀɢᴇ •", url=landscape_url)
         markup.row(aero_button, open_image_button)
@@ -1065,7 +1256,7 @@ def search_poster(message):
         r'(?i)\b(?:chi|cdrama|chinese|mandarin|zh)\b': 'zh',
         r'(?i)\b(?:jdrama|j-drama|japanese|jap|anime|ja)\b': 'ja',
         r'(?i)\b(?:thai|th)\b': 'th',
-        
+
         # Indian Languages
         r'(?i)\b(?:hindi|hin|hi)\b': 'hi',
         r'(?i)\b(?:tamil|tam|ta)\b': 'ta',
@@ -1084,7 +1275,7 @@ def search_poster(message):
         r'(?i)\b(?:russian|rus|ru)\b': 'ru',
         r'(?i)\b(?:portuguese|por|pt)\b': 'pt',
         r'(?i)\b(?:turkish|tur|tr)\b': 'tr',
-        
+
         # Middle Eastern & English
         r'(?i)\b(?:arabic|ara|ar)\b': 'ar',
         r'(?i)\b(?:persian|farsi|fa)\b': 'fa',
@@ -1114,7 +1305,7 @@ def search_poster(message):
         clean_query = re.sub(r'(?i)\b(?:s|season)\s*0*\d+\b', '', clean_query).strip()
 
     status_msg = bot.reply_to(message, f"<b><i>searching <code>{html.escape(raw_query)}</code>...</i></b>", parse_mode="HTML")
-    
+
     if not TMDB_API_KEY:
         bot.edit_message_text("⚠️ <b>𝖾𝗋𝗋𝗈𝗋:</b> <code>tmdb_api_key</code> 𝗂𝗌 𝗆𝗂𝗌𝗌𝗂𝗇𝗀!.", message.chat.id, status_msg.message_id, parse_mode="HTML")
         return
@@ -1125,7 +1316,7 @@ def search_poster(message):
     results = []
 
     try:
- 
+
         if season_number or lang_filter in ["ko", "zh", "ja"]:
             tv_url = f"https://api.themoviedb.org/3/search/tv?api_key={TMDB_API_KEY}&query={requests.utils.quote(clean_query)}{first_air_year_param}{lang_param}"
             tv_res = session.get(tv_url, timeout=5)
@@ -1172,10 +1363,10 @@ def search_poster(message):
             target_item = valid_items[0]
             item_id = str(target_item.get("id"))
             media_type = target_item.get("media_type", "movie")
-            
+
             images_list = []
             img_endpoint = "tv" if (media_type == "tv" or season_number) else "movie"
-            
+
             if season_number and media_type == "tv":
                 images_url = f"https://api.themoviedb.org/3/tv/{item_id}/season/{season_number}/images?api_key={TMDB_API_KEY}"
             else:
@@ -1187,7 +1378,7 @@ def search_poster(message):
                     img_data = img_res.json()
                     backdrops = img_data.get("backdrops", [])
                     posters = img_data.get("posters", [])
-                    
+
                     for b in backdrops:
                         if b.get("file_path"):
                             images_list.append({
@@ -1214,7 +1405,7 @@ def search_poster(message):
             }
 
             photo_url, caption, markup = build_poster_page(search_id, index=0)
-            
+
             try:
                 bot.delete_message(message.chat.id, status_msg.message_id)
             except Exception:
@@ -1249,7 +1440,7 @@ def search_poster(message):
 @bot.message_handler(commands=['imdb'])
 def imdb_command(message):
     args = message.text.split(maxsplit=1)
-    
+
     if len(args) == 1:
         bot.reply_to(
             message,
@@ -1262,18 +1453,18 @@ def imdb_command(message):
     status_msg = bot.reply_to(message, "<b><i>Searching TMDb...</i></b>", parse_mode="HTML")
 
     search_url = f"https://api.themoviedb.org/3/search/multi?api_key={TMDB_API_KEY}&query={requests.utils.quote(query)}"
-    
+
     try:
         res = session.get(search_url, timeout=5)
         if res.status_code != 200:
             bot.edit_message_text("⚠️ <i>Failed to fetch results from TMDb.</i>", message.chat.id, status_msg.message_id, parse_mode="HTML")
             return
-            
+
         data = res.json()
         results = data.get("results", [])
-        
+
         valid_results = [item for item in results if item.get("title") or item.get("name")]
-        
+
         if not valid_results:
             bot.edit_message_text("‼️ <b>No titles found for your search!</b>", message.chat.id, status_msg.message_id, parse_mode="HTML")
             return
@@ -1286,7 +1477,7 @@ def imdb_command(message):
             title = item.get("title") or item.get("name")
             release_date = item.get("release_date") or item.get("first_air_date") or ""
             year = release_date.split("-")[0] if release_date else "N/A"
-            
+
             button_text = f"{title} ({year})"
             callback_data = f"imdb_select_{search_id}_{idx}"
             markup.add(InlineKeyboardButton(text=button_text, callback_data=callback_data))
@@ -1314,7 +1505,7 @@ def imdb_command(message):
 @bot.message_handler(commands=['jhs', 'posters'])
 def movie_poster_handler(message):
     query = message.text.replace("/jhs", "").replace("/posters", "").strip()
-    
+
     if not query:
         bot.reply_to(
             message, 
@@ -1335,7 +1526,7 @@ def movie_poster_handler(message):
     media_type = item.get("media_type", "movie")
     item_id = str(item.get("id"))
     title = item.get("title") or item.get("name") or "Unknown Title"
-    
+
     backdrop_path = item.get("backdrop_path")
     poster_path = item.get("poster_path")
 
@@ -1376,7 +1567,7 @@ def movie_poster_handler(message):
             processed_io = add_title_overlay(img_response.content, title, logo_url, position=assigned_position)
             with open(landscape_file_path, "wb") as f:
                 f.write(processed_io.getvalue())
-        
+
         port_res = session.get(poster_url_original, timeout=8)
         if port_res.status_code == 200:
             with open(portrait_file_path, "wb") as f:
@@ -1406,7 +1597,7 @@ def movie_poster_handler(message):
     )
 
     try:
-       
+
         if os.path.exists(landscape_file_path):
             with open(landscape_file_path, 'rb') as photo:
                 bot.send_photo(
@@ -1434,13 +1625,149 @@ def movie_poster_handler(message):
 # Support : @Coders_Grp 
 # ------------------------ #
 
+@bot.message_handler(commands=['manga'])
+def manga_command_handler(message):
+    query = message.text.replace("/manga", "").strip()
+    if not query:
+        bot.reply_to(message, "<b>Usage:</b> <code>/manga [title]</code>", parse_mode="HTML")
+        return
+
+    status_msg = bot.reply_to(message, "⚙️ <b>ɢᴇɴᴇʀᴀᴛɪɴɢ ᴩᴏsᴛᴇʀ, ᴡᴀɪᴛ a sec...</b>", parse_mode="HTML")
+        
+    search_url = f"https://api.themoviedb.org/3/search/tv?api_key={TMDB_API_KEY}&query={requests.utils.quote(query)}"
+    res = session.get(search_url, timeout=5).json()
+    results = res.get("results", [])
+
+    if not results:
+        search_url = f"https://api.themoviedb.org/3/search/movie?api_key={TMDB_API_KEY}&query={requests.utils.quote(query)}"
+        res = session.get(search_url, timeout=5).json()
+        results = res.get("results", [])
+
+    if not results:
+        bot.reply_to(message, f"‼️ No results found for <b>{html.escape(query)}</b>", parse_mode="HTML")
+        return
+
+    item = results[0]
+    item_id = str(item.get("id"))
+    media_type = item.get("media_type", "tv")
+    title = item.get("name") or item.get("title") or query
+    endpoint = "tv" if media_type == "tv" else "movie"
+    details_url = f"https://api.themoviedb.org/3/{endpoint}/{item_id}?api_key={TMDB_API_KEY}&append_to_response=images"
+    det_res = session.get(details_url, timeout=5).json()
+    orig_lang = det_res.get("original_language", "ja").lower()
+    adult = det_res.get("adult", False)
+    genres_list = [g["name"] for g in det_res.get("genres", [])]
+
+    if adult or any(g.lower() in ["erotica", "hentai", "ecchi"] for g in genres_list):
+        detected_type = "Pornhwa" if orig_lang == "ko" else "Hentai"
+    elif orig_lang == "ko":
+        detected_type = "Manhwa"
+    elif orig_lang == "zh":
+        detected_type = "Manhua"
+    elif orig_lang == "ja":
+        detected_type = "Manga"
+    else:
+        detected_type = "Manga" if media_type == "tv" else "Comic"
+
+    vote_avg = det_res.get("vote_average", 0)
+    rating_pct = f"{int(vote_avg * 10)}%" if vote_avg else "84%"
+    genres_str = ", ".join(genres_list) if genres_list else "Action, Fantasy"
+    status_str = det_res.get("status", "Releasing")
+    episodes = det_res.get("number_of_episodes")
+    chapters_str = f"{episodes}+" if episodes else "120+"
+    images = det_res.get("images", {})
+    artworks = [f"https://image.tmdb.org/t/p/original{i['file_path']}" for i in images.get("backdrops", [])[:8]]
+    posters = [f"https://image.tmdb.org/t/p/w500{i['file_path']}" for i in images.get("posters", [])[:2]]
+
+    if not artworks:
+        path = item.get("backdrop_path") or item.get("poster_path")
+        artworks = [f"https://image.tmdb.org/t/p/original{path}"] if path else ["https://graph.org/file/faf795187aa693e1024a4-746b376c8dcc889d4f.jpg"]
+
+    if not posters:
+        posters = [artworks[0], artworks[0]]
+
+    logo_url = get_tmdb_logo_url(item_id, endpoint)
+    synopsis = det_res.get("overview") or item.get("overview") or "No synopsis available."
+
+    search_id = str(message.message_id)
+    SEARCH_CACHE[search_id] = {
+        "title": title,
+        "type": detected_type,
+        "genres": genres_str,
+        "rating": rating_pct,
+        "status": status_str,
+        "chapters": chapters_str,
+        "synopsis": synopsis,
+        "artworks": artworks,
+        "posters": posters,
+        "logo_url": logo_url
+    }
+
+    current_index = 0
+    total_pages = len(artworks)
+
+    caption_text = (
+        f"<b>{html.escape(title)}</b> ❞\n\n"
+        f"» <b>Type:</b> {detected_type}\n"
+        f"» <b>Average Rating:</b> {rating_pct}\n"
+        f"» <b>Status:</b> {status_str}\n"
+        f"» <b>Chapters:</b> {chapters_str}\n"
+        f"» <b>Genres:</b> {html.escape(genres_str)}\n\n"
+        f"▶ <u><b>SYNOPSIS</b></u>\n"
+        f"<b>➔</b> <i>{html.escape(synopsis[:400])}...</i> ❞"
+    )
+
+    try:
+        img_bytes = session.get(artworks[current_index], timeout=5).content
+        p_bytes_list = []
+        for p_url in posters[:2]:
+            try:
+                p_bytes_list.append(session.get(p_url, timeout=4).content)
+            except Exception:
+                p_bytes_list.append(img_bytes)
+
+        card_io = generate_custom_media_card(
+            img_bytes, p_bytes_list, title, genres_list if isinstance(genres_list, list) else ["Action", "Fantasy"],
+            synopsis, logo_url=logo_url, branding="Manga Aero"
+        )
+
+        markup = InlineKeyboardMarkup()
+        markup.row(
+            InlineKeyboardButton(text="◀ ᴘʀᴇᴠ •", callback_data=f"media_card_{search_id}_{current_index-1}"),
+            InlineKeyboardButton(text=f"01/{total_pages:02d}", callback_data="noop"),
+            InlineKeyboardButton(text="• ɴᴇxᴛ ▶", callback_data=f"media_card_{search_id}_{current_index+1}")
+        )
+        markup.row(InlineKeyboardButton(text="• ᴄᴀɴᴄᴇʟ•", callback_data="cancel_session"))
+
+        try:
+            bot.delete_message(message.chat.id, status_msg.message_id)
+        except Exception:
+            pass
+
+        bot.send_photo(
+            chat_id=message.chat.id,
+            photo=card_io,
+            caption=caption_text,
+            parse_mode="HTML",
+            reply_markup=markup
+        )
+    except Exception as e:
+        bot.reply_to(message, f"❌ Error generating manga result: {e}", parse_mode="HTML")
+
+# ------------------------ #
+# Don't Remove My Credits
+# Owner: @Mr_Mohammed_29
+# Updates: @Aero_Unity 
+# Support : @Coders_Grp 
+# ------------------------ #
+
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
     try:
         bot.remove_webhook()
     except Exception:
         pass
-        
+
     threading.Thread(target=lambda: bot.infinity_polling(), daemon=True).start()
     app.run(host="0.0.0.0", port=port)
 
