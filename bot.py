@@ -23,7 +23,7 @@ import threading
 
 from flask import Flask, send_file, request
 from telebot.types import InlineKeyboardMarkup, InlineKeyboardButton
-from PIL import Image, ImageDraw, ImageFont,ImageFilter, ImageOps
+from PIL import Image, ImageDraw, ImageFont, ImageFilter, ImageOps
 
 # ------------------------ #
 # Don't Remove My Credits
@@ -458,38 +458,76 @@ def handle_all_callbacks(call):
             f"<b>➔</b> <i>{html.escape(data['synopsis'][:400])}...</i> ❞"
         )
 
+        markup = InlineKeyboardMarkup()
+        prev_idx = (current_index - 1) % total_pages
+        next_idx = (current_index + 1) % total_pages
+
+        markup.row(
+            InlineKeyboardButton(text="◀ ᴘʀᴇᴠ •", callback_data=f"media_card_{search_id}_{prev_idx}"),
+            InlineKeyboardButton(text=f"{current_index+1:02d}/{total_pages:02d}", callback_data="noop"),
+            InlineKeyboardButton(text="• ɴᴇxᴛ ▶", callback_data=f"media_card_{search_id}_{next_idx}")
+        )
+        markup.row(InlineKeyboardButton(text="• ᴄᴀɴᴄᴇʟ •", callback_data="cancel_session"))
+
+        # 1. INSTANT LOAD: Check if this page was already sent once (re-uses Telegram file_id)
+        file_ids = data.get("file_ids", {})
+        if current_index in file_ids:
+            try:
+                bot.edit_message_media(
+                    chat_id=call.message.chat.id,
+                    message_id=call.message.message_id,
+                    media=telebot.types.InputMediaPhoto(file_ids[current_index], caption=caption_text, parse_mode="HTML"),
+                    reply_markup=markup
+                )
+                bot.answer_callback_query(call.id)
+                return
+            except Exception as e:
+                print(f"Fast edit cache error: {e}")
+
+        # 2. RENDER: If not cached yet, generate PIL card with fast connection pool & rating parsing
         try:
-            img_bytes = session.get(artworks[current_index], timeout=5).content
+            img_bytes = session.get(artworks[current_index], timeout=4).content
             p_bytes_list = []
             for p_url in posters[:2]:
                 try:
-                    p_bytes_list.append(session.get(p_url, timeout=4).content)
+                    p_bytes_list.append(session.get(p_url, timeout=3).content)
                 except Exception:
                     p_bytes_list.append(img_bytes)
 
             genres_list = [g.strip() for g in data["genres"].split(",")]
+            
+            # Convert percentage/rating to numerical score format (e.g., 8.4 / 10)
+            raw_rating = data.get("rating", "8.4")
+            if "%" in str(raw_rating):
+                try:
+                    raw_rating = round(float(raw_rating.replace("%", "")) / 10.0, 1)
+                except ValueError:
+                    raw_rating = "8.4"
+
             card_io = generate_custom_media_card(
-                img_bytes, p_bytes_list, data["title"], genres_list,
-                data["synopsis"], logo_url=data["logo_url"], branding="Manga Aero"
+                poster_bytes=img_bytes,
+                portrait_bytes_list=p_bytes_list,
+                title=data["title"],
+                genres=genres_list,
+                synopsis=data["synopsis"],
+                rating_val=raw_rating,
+                logo_url=data["logo_url"],
+                branding="Manga Aero"
             )
 
-            markup = InlineKeyboardMarkup()
-            prev_idx = (current_index - 1) % total_pages
-            next_idx = (current_index + 1) % total_pages
-
-            markup.row(
-                InlineKeyboardButton(text="◀ ᴘʀᴇᴠ •", callback_data=f"media_card_{search_id}_{prev_idx}"),
-                InlineKeyboardButton(text=f"{current_index+1:02d}/{total_pages:02d}", callback_data="noop"),
-                InlineKeyboardButton(text="• ɴᴇxᴛ ▶", callback_data=f"media_card_{search_id}_{next_idx}")
-            )
-            markup.row(InlineKeyboardButton(text="• ᴄᴀɴᴄᴇʟ •", callback_data="cancel_session"))
-
-            bot.edit_message_media(
+            edited_msg = bot.edit_message_media(
                 chat_id=call.message.chat.id,
                 message_id=call.message.message_id,
                 media=telebot.types.InputMediaPhoto(card_io, caption=caption_text, parse_mode="HTML"),
                 reply_markup=markup
             )
+
+            # Store Telegram's uploaded photo file_id for lightning-fast subsequent switches
+            if edited_msg and edited_msg.photo:
+                if "file_ids" not in data:
+                    data["file_ids"] = {}
+                data["file_ids"][current_index] = edited_msg.photo[-1].file_id
+
         except Exception as e:
             print(f"Media card update error: {e}")
 
@@ -967,57 +1005,73 @@ def add_title_overlay(image_bytes, title_text="", logo_url=None, position="cente
 # Support : @Coders_Grp 
 # ------------------------ #
 
-def generate_custom_media_card(poster_bytes, portrait_bytes_list, title, genres, synopsis, logo_url=None, branding="Manga Aero"):
+def generate_custom_media_card(poster_bytes, portrait_bytes_list, title, genres, synopsis, rating_val="8.4", logo_url=None, branding="Manga Aero"):
     target_w, target_h = 1280, 720
     
-    canvas = Image.new("RGBA", (target_w, target_h), (18, 16, 16, 255))
-    
+    canvas = Image.new("RGBA", (target_w, target_h), (255, 255, 255, 255))
+
     try:
         raw_art = Image.open(io.BytesIO(poster_bytes)).convert("RGBA")
-        art_right = ImageOps.fit(raw_art, (680, target_h), method=Image.Resampling.LANCZOS)
-        canvas.paste(art_right, (600, 0))
+        art_left = ImageOps.fit(raw_art, (500, target_h), method=Image.Resampling.LANCZOS)
+        canvas.paste(art_left, (0, 0))
     except Exception as e:
         print(f"Error processing artwork: {e}")
-        raw_art = None
-        
-    if raw_art:
-        bg_blur = raw_art.resize((600, target_h), Image.Resampling.LANCZOS)
-        bg_blur = bg_blur.filter(ImageFilter.GaussianBlur(25))
-        # Dark overlay tint over the blurred image
-        dark_tint = Image.new("RGBA", (600, target_h), (25, 20, 18, 210))
-        bg_blur.paste(dark_tint, (0, 0), dark_tint)
-        canvas.paste(bg_blur, (0, 0))
-    else:
-        left_panel = Image.new("RGBA", (600, target_h), (28, 24, 22, 255))
-        canvas.paste(left_panel, (0, 0))
 
     draw = ImageDraw.Draw(canvas)
 
-    # 4. Top Header Branding
-    draw.text((40, 25), branding, fill=(255, 255, 255))
-    draw.text((170, 30), "CRUISE THROUGH INFINITE CHAPTERS", fill=(180, 180, 180))
+    def get_font(size, bold=False):
+        font_paths = [
+            "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf" if bold else "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf",
+            "/usr/share/fonts/truetype/liberation/LiberationSans-Bold.ttf" if bold else "/usr/share/fonts/truetype/liberation/LiberationSans.ttf",
+            "/usr/share/fonts/truetype/msttcorefonts/Arial_Bold.ttf" if bold else "/usr/share/fonts/truetype/msttcorefonts/Arial.ttf",
+            "arialbd.ttf" if bold else "arial.ttf",
+            "DejaVuSans-Bold.ttf" if bold else "DejaVuSans.ttf"
+        ]
+        for path in font_paths:
+            try:
+                return ImageFont.truetype(path, size)
+            except Exception:
+                continue
+        return ImageFont.load_default()
 
-    thumb_coords = [(40, 75), (40, 210)]
-    for idx, p_bytes in enumerate(portrait_bytes_list[:2]):
-        try:
-            th_img = Image.open(io.BytesIO(p_bytes)).convert("RGBA")
-            th_img = ImageOps.fit(th_img, (100, 120), method=Image.Resampling.LANCZOS)
-            tx, ty = thumb_coords[idx]
-            canvas.paste(th_img, (tx, ty))
-            draw.rectangle([tx, ty, tx + 100, ty + 120], outline=(240, 240, 240), width=2)
-        except Exception:
-            pass
-            
-    syn_box_x1, syn_box_y1, syn_box_x2, syn_box_y2 = 155, 75, 570, 340
-    draw.rounded_rectangle([syn_box_x1, syn_box_y1, syn_box_x2, syn_box_y2], radius=12, fill=(35, 30, 28, 200), outline=(65, 55, 50), width=1)    
-    box_center_x = (syn_box_x1 + syn_box_x2) // 2
-    syn_title = "SYNOPSIS  »»»"
-    draw.text((box_center_x - (len(syn_title) * 3.5), 88), syn_title, fill=(255, 255, 255))
+    font_title = get_font(34, bold=True)
+    font_bold = get_font(16, bold=True)
+    font_reg = get_font(14, bold=False)
+    font_small = get_font(11, bold=False)
+    font_badge_title = get_font(18, bold=True)
 
-    words = synopsis.split()
+    wm_x, wm_y = 25, target_h - 38
+    wm_text = "@Aero_Unity"
+    
+    for offset_x, offset_y in [(-1, -1), (1, -1), (-1, 1), (1, 1), (0, 2), (2, 0)]:
+        draw.text((wm_x + offset_x, wm_y + offset_y), wm_text, fill=(0, 0, 0, 255), font=font_bold)
+        
+    draw.text((wm_x, wm_y), wm_text, fill=(255, 255, 255, 255), font=font_bold)
+    draw.text((980, 28), "MANGA AERO", fill=(20, 20, 20), font=font_badge_title)
+    draw.text((980, 50), "INSTANT ART, ENDLESS STORIES", fill=(0, 136, 204), font=font_small)
+    clean_title = title.upper()[:24]
+    draw.text((560, 105), clean_title, fill=(15, 15, 15), font=font_title)
+
+    gx, gy = 560, 165
+    for g in genres[:3]:
+        tag_text = str(g).upper()[:12]
+        text_w = len(tag_text) * 7
+        pill_w = max(85, text_w + 24)
+        draw.rounded_rectangle([gx, gy, gx + pill_w, gy + 30], radius=15, outline=(200, 200, 200), width=1, fill=(245, 245, 245))
+        draw.text((gx + 12, gy + 6), tag_text, fill=(60, 60, 60), font=font_reg)
+        gx += pill_w + 10
+
+    rating_y = gy + 42
+    draw.text((560, rating_y), "Avg Ratings : ", fill=(40, 40, 40), font=font_bold)  
+    score_display = f"{rating_val} / 10" if "/" not in str(rating_val) else rating_val
+    draw.text((670, rating_y), score_display, fill=(0, 136, 204), font=font_bold)
+    draw.line([(560, 255), (1220, 255)], fill=(220, 220, 220), width=1)
+    
+    clean_synopsis = synopsis if synopsis else "No synopsis available from TMDb."
+    words = clean_synopsis.split()
     lines, curr_line = [], ""
     for w in words:
-        if len(curr_line + " " + w) < 30:
+        if len(curr_line + " " + w) < 75:
             curr_line += " " + w
         else:
             lines.append(curr_line.strip())
@@ -1025,51 +1079,33 @@ def generate_custom_media_card(poster_bytes, portrait_bytes_list, title, genres,
     if curr_line:
         lines.append(curr_line.strip())
 
-    y_pos = 120
-    for line in lines[:5]:
-        line_w = len(line) * 6.5
-        lx = box_center_x - (line_w / 2)
-        draw.text((lx, y_pos), line, fill=(215, 215, 215))
-        y_pos += 20
+    y_pos = 280
+    for line in lines[:8]:
+        draw.text((560, y_pos), line.upper(), fill=(95, 95, 95), font=font_reg)
+        y_pos += 22
 
-    sub_tag = f"»»» {branding}"
-    draw.text((box_center_x - (len(sub_tag) * 3.5), y_pos + 8), sub_tag, fill=(180, 180, 180))
-    title_box_x1, title_box_y1, title_box_x2, title_box_y2 = 40, 360, 570, 670
-    draw.rounded_rectangle([title_box_x1, title_box_y1, title_box_x2, title_box_y2], radius=15, fill=(18, 24, 32, 235), outline=(45, 58, 72), width=1) 
-    clean_title = title.upper()[:24]
-    bottom_center_x = (title_box_x1 + title_box_x2) // 2
-    title_x = bottom_center_x - (len(clean_title) * 4.5)
-    draw.text((title_x, 380), clean_title, fill=(255, 255, 255))
+    draw.line([(560, 500), (1220, 500)], fill=(220, 220, 220), width=1)
 
-    gx, gy = 60, 440
-    for g in genres[:6]:
-        tag_text = g.upper()[:12]
-        draw.rounded_rectangle([gx, gy, gx + 125, gy + 32], radius=16, outline=(120, 135, 150), width=1)
-        draw.text((gx + 16, gy + 8), tag_text, fill=(210, 220, 235))
-        gx += 140
-        if gx > 460:
-            gx = 60
-            gy += 45
+    btn_x, btn_y = 560, 535
+    draw.rounded_rectangle([btn_x, btn_y, btn_x + 160, btn_y + 48], radius=24, fill=(15, 15, 15))
+    draw.text((btn_x + 22, btn_y + 14), "READ ", fill=(255, 255, 255), font=font_bold)
+    draw.text((btn_x + 72, btn_y + 14), "NOW!!", fill=(255, 50, 50), font=font_bold)
 
-    draw.text((bottom_center_x - (len(branding) * 3.5), 625), branding.upper(), fill=(140, 140, 140))
+    bm_x = btn_x + 185
+    draw.ellipse([bm_x, btn_y, bm_x + 48, btn_y + 48], fill=(15, 15, 15))
+    draw.polygon([
+        (bm_x + 18, btn_y + 14), 
+        (bm_x + 30, btn_y + 14), 
+        (bm_x + 30, btn_y + 34), 
+        (bm_x + 24, btn_y + 28), 
+        (bm_x + 18, btn_y + 34)
+    ], fill=(255, 255, 255))
 
-    if logo_url:
-        try:
-            logo_res = session.get(logo_url, timeout=5)
-            if logo_res.status_code == 200:
-                logo_img = Image.open(io.BytesIO(logo_res.content)).convert("RGBA")
-                logo_img.thumbnail((450, 180), Image.Resampling.LANCZOS)
-                lx = 600 + (680 - logo_img.width) // 2
-                ly = target_h - logo_img.height - 40
-                canvas.paste(logo_img, (lx, ly), mask=logo_img)
-        except Exception as e:
-            print(f"Error drawing logo overlay: {e}")
-            
     output = io.BytesIO()
     canvas.convert("RGB").save(output, format="JPEG", quality=95, subsampling=0)
     output.seek(0)
     return output
-    
+
 # ------------------------ #
 # Don't Remove My Credits
 # Owner: @Mr_Mohammed_29
@@ -1206,7 +1242,6 @@ def build_poster_page(search_id, index=0):
         markup.row(aero_button, open_image_button)
 
         return backdrop_url_original, caption, markup
-
     return None, None, None
 
 # ------------------------ #
@@ -1349,6 +1384,12 @@ def search_poster(message):
                     for r in results:
                         r["media_type"] = "tv"
 
+            if not results:
+                multi_url = f"https://api.themoviedb.org/3/search/multi?api_key={TMDB_API_KEY}&query={requests.utils.quote(raw_query)}&include_adult=true"
+                multi_res = session.get(multi_url, timeout=5)
+                if multi_res.status_code == 200:
+                    results = [r for r in multi_res.json().get("results", []) if r.get("media_type") in ["tv", "movie"]]
+
         if lang_filter and results:
             strict_filtered = [i for i in results if i.get("original_language") == lang_filter]
             if strict_filtered:
@@ -1452,7 +1493,7 @@ def imdb_command(message):
     query = args[1].strip()
     status_msg = bot.reply_to(message, "<b><i>Searching TMDb...</i></b>", parse_mode="HTML")
 
-    search_url = f"https://api.themoviedb.org/3/search/multi?api_key={TMDB_API_KEY}&query={requests.utils.quote(query)}"
+    search_url = f"https://api.themoviedb.org/3/search/multi?api_key={TMDB_API_KEY}&query={requests.utils.quote(query)}&include_adult=true"
 
     try:
         res = session.get(search_url, timeout=5)
@@ -1485,6 +1526,7 @@ def imdb_command(message):
         markup.add(InlineKeyboardButton(text="• Cʟᴏsᴇ •", callback_data="imdb_close"))
 
         bot.delete_message(message.chat.id, status_msg.message_id)
+        
         bot.send_message(
             chat_id=message.chat.id,
             text="<b>Select The Correct Title From Below Results :</b>",
@@ -1514,7 +1556,9 @@ def movie_poster_handler(message):
         )
         return
 
-    search_url = f"https://api.themoviedb.org/3/search/multi?api_key={TMDB_API_KEY}&query={requests.utils.quote(query)}"
+    status_msg = bot.reply_to(message, "<b>Fᴇᴛᴄʜɪɴɢ ᴩᴏsᴛᴇʀ, ᴡᴀɪᴛ a sec...</b>", parse_mode="HTML")
+
+    search_url = f"https://api.themoviedb.org/3/search/multi?api_key={TMDB_API_KEY}&query={requests.utils.quote(query)}&include_adult=true"
     response = requests.get(search_url).json()
     results = response.get("results", [])
 
@@ -1595,6 +1639,11 @@ def movie_poster_handler(message):
         InlineKeyboardButton("• Bᴀɴɴᴇʀ •", url=banner_url),
         InlineKeyboardButton("• Pᴏsᴛᴇʀ •", url=portrait_url)
     )
+    
+    try:
+        bot.delete_message(message.chat.id, status_msg.message_id)
+    except Exception:
+        pass
 
     try:
 
@@ -1634,12 +1683,12 @@ def manga_command_handler(message):
 
     status_msg = bot.reply_to(message, "⚙️ <b>ɢᴇɴᴇʀᴀᴛɪɴɢ ᴩᴏsᴛᴇʀ, ᴡᴀɪᴛ a sec...</b>", parse_mode="HTML")
         
-    search_url = f"https://api.themoviedb.org/3/search/tv?api_key={TMDB_API_KEY}&query={requests.utils.quote(query)}"
+    search_url = f"https://api.themoviedb.org/3/search/tv?api_key={TMDB_API_KEY}&query={requests.utils.quote(query)}&include_adult=true"
     res = session.get(search_url, timeout=5).json()
     results = res.get("results", [])
 
     if not results:
-        search_url = f"https://api.themoviedb.org/3/search/movie?api_key={TMDB_API_KEY}&query={requests.utils.quote(query)}"
+        search_url = f"https://api.themoviedb.org/3/search/movie?api_key={TMDB_API_KEY}&query={requests.utils.quote(query)}&include_adult=true"
         res = session.get(search_url, timeout=5).json()
         results = res.get("results", [])
 
@@ -1700,7 +1749,8 @@ def manga_command_handler(message):
         "synopsis": synopsis,
         "artworks": artworks,
         "posters": posters,
-        "logo_url": logo_url
+        "logo_url": logo_url,
+        "file_ids": {}
     }
 
     current_index = 0
@@ -1727,8 +1777,14 @@ def manga_command_handler(message):
                 p_bytes_list.append(img_bytes)
 
         card_io = generate_custom_media_card(
-            img_bytes, p_bytes_list, title, genres_list if isinstance(genres_list, list) else ["Action", "Fantasy"],
-            synopsis, logo_url=logo_url, branding="Manga Aero"
+            poster_bytes=img_bytes,
+            portrait_bytes_list=p_bytes_list,
+            title=title,
+            genres=genres_list if isinstance(genres_list, list) else ["Action", "Fantasy"],
+            synopsis=synopsis,
+            rating_val=round(vote_avg, 1) if vote_avg else "8.4",
+            logo_url=logo_url,
+            branding="Manga Aero"
         )
 
         markup = InlineKeyboardMarkup()
