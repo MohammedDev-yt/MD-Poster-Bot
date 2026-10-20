@@ -1456,35 +1456,45 @@ def search_poster(message):
             media_type = target_item.get("media_type", "movie")
 
             images_list = []
-            img_endpoint = "tv" if (media_type == "tv" or season_number) else "movie"
-
+            
             if season_number and media_type == "tv":
-                images_url = f"https://api.themoviedb.org/3/tv/{item_id}/season/{season_number}/images?api_key={TMDB_API_KEY}"
-            else:
-                images_url = f"https://api.themoviedb.org/3/{img_endpoint}/{item_id}/images?api_key={TMDB_API_KEY}"
-
-            try:
-                img_res = session.get(images_url, timeout=5)
-                if img_res.status_code == 200:
-                    img_data = img_res.json()
-                    backdrops = img_data.get("backdrops", [])
-                    posters = img_data.get("posters", [])
-
-                    for b in backdrops:
-                        if b.get("file_path"):
-                            images_list.append({
-                                **target_item,
-                                "backdrop_path": b.get("file_path")
-                            })
-                    if not images_list:
-                        for p in posters:
-                            if p.get("file_path"):
+                season_images_url = f"https://api.themoviedb.org/3/tv/{item_id}/season/{season_number}/images?api_key={TMDB_API_KEY}"
+                try:
+                    s_res = session.get(season_images_url, timeout=5)
+                    if s_res.status_code == 200:
+                        s_data = s_res.json()
+                        for b in s_data.get("backdrops", []):
+                            if b.get("file_path"):
                                 images_list.append({
                                     **target_item,
-                                    "backdrop_path": p.get("file_path")
+                                    "backdrop_path": b.get("file_path")
                                 })
-            except Exception:
-                pass
+                except Exception:
+                    pass
+
+            if not images_list:
+                img_endpoint = "tv" if media_type == "tv" else "movie"
+                images_url = f"https://api.themoviedb.org/3/{img_endpoint}/{item_id}/images?api_key={TMDB_API_KEY}"
+                try:
+                    img_res = session.get(images_url, timeout=5)
+                    if img_res.status_code == 200:
+                        img_data = img_res.json()
+                        for b in img_data.get("backdrops", []):
+                            if b.get("file_path"):
+                                images_list.append({
+                                    **target_item,
+                                    "backdrop_path": b.get("file_path")
+                                })
+                        
+                        if not images_list:
+                            for p in img_data.get("posters", []):
+                                if p.get("file_path"):
+                                    images_list.append({
+                                        **target_item,
+                                        "backdrop_path": p.get("file_path")
+                                    })
+                except Exception:
+                    pass
 
             if not images_list:
                 images_list = [target_item]
@@ -1867,6 +1877,64 @@ def manga_command_handler(message):
 # Support : @Coders_Grp 
 # ------------------------ #
 
+def detect_media_type_and_studio(item, session, tmdb_api_key):
+    media_type_raw = str(item.get("media_type", "movie")).lower()
+    genre_ids = item.get("genre_ids", [])
+    orig_lang = str(item.get("original_language", "")).lower()
+    origin_country = [c.upper() for c in item.get("origin_country", [])]
+    
+    full_text = (item.get("title", "") + " " + item.get("name", "") + " " + item.get("overview", "")).lower()
+    
+    if item.get("adult", False) or "pornhwa" in full_text or "erotic" in full_text:
+        detected_type = "Pornhwa" if ("manhwa" in full_text or orig_lang == "ko") else "Adult"
+    elif "manhwa" in full_text or (orig_lang == "ko" and "webtoon" in full_text):
+        detected_type = "Manhwa"
+    elif "manhua" in full_text or (orig_lang == "zh" and "comic" in full_text):
+        detected_type = "Manhua"
+    elif "manga" in full_text:
+        detected_type = "Manga"
+    elif 16 in genre_ids and orig_lang == "ja":
+        detected_type = "Anime"
+    elif media_type_raw == "tv" and (orig_lang in ["ko", "ja", "zh", "th"] or any(c in ["KR", "JP", "CN", "TW", "TH"] for c in origin_country)):
+        detected_type = "Drama"
+    elif media_type_raw == "tv" and (orig_lang in ["hi", "ta", "te", "ml", "mr", "bn"] or "IN" in origin_country):
+        detected_type = "TV Serial"
+    elif media_type_raw == "tv":
+        detected_type = "TV Series"
+    elif media_type_raw == "movie":
+        detected_type = "Movie"
+    else:
+        detected_type = "TV Show"
+
+    studio_name = "N/A"
+    item_id = item.get("id")
+    
+    if item_id:
+        endpoint = "tv" if media_type_raw == "tv" else "movie"
+        details_url = f"https://api.themoviedb.org/3/{endpoint}/{item_id}?api_key={tmdb_api_key}"
+        try:
+            res = session.get(details_url, timeout=3)
+            if res.status_code == 200:
+                data = res.json()
+                prod_companies = data.get("production_companies", [])
+                if prod_companies:
+                    studio_name = prod_companies[0].get("name", "N/A")
+                elif endpoint == "tv":
+                    networks = data.get("networks", [])
+                    if networks:
+                        studio_name = networks[0].get("name", "N/A")
+        except Exception:
+            pass
+
+    return detected_type, studio_name
+
+# ------------------------ #
+# Don't Remove My Credits
+# Owner: @Mr_Mohammed_29
+# Updates: @Aero_Unity 
+# Support : @Coders_Grp 
+# ------------------------ #
+
 def generate_custom_media_card(poster_bytes, portrait_bytes_list, title, genres, synopsis, rating_val="8.4", logo_url=None, branding="ANILIST ANIME", extra_meta=None):
     target_w, target_h = 1280, 720
     b_upper = branding.upper()
@@ -1990,7 +2058,7 @@ def generate_custom_media_card(poster_bytes, portrait_bytes_list, title, genres,
 # Support : @Coders_Grp 
 # ------------------------ #
     
-    elif "NETFLIX" in b_upper:
+    elif "NETFLIX" in b_upper or "NETCR" in b_upper:
         canvas = base_backdrop.copy()
         vignette = Image.new("RGBA", (target_w, target_h), (0, 0, 0, 0))
         v_draw = ImageDraw.Draw(vignette)
@@ -2006,29 +2074,37 @@ def generate_custom_media_card(poster_bytes, portrait_bytes_list, title, genres,
         canvas.alpha_composite(vignette)
         draw = ImageDraw.Draw(canvas)
         draw.text((60, 40), "N", fill=(229, 9, 20), font=get_font(48, bold=True))
-        draw.text((60, 360), title, fill=(255, 255, 255), font=get_font(52, bold=True))
-        match_str = f"{match_pct}% Match   {status_str}   {media_format}   HD"
-        draw.text((60, 435), match_str, fill=(70, 211, 105), font=get_font(15, bold=True))
-        draw.text((60, 465), " • ".join(genres[:4]), fill=(180, 180, 180), font=get_font(13, bold=False))
+        draw.text((60, 340), title.upper()[:25], fill=(255, 255, 255), font=get_font(48, bold=True))
+        rel_year = extra_meta.get("year", "2024") if extra_meta else "2024"
+        is_manga_style = "MANGA" in b_upper or "NETM" in b_upper
+        count_label = f"{extra_meta.get('chapters', '120+')} Chapters" if is_manga_style else f"{extra_meta.get('episodes', '12')} Episodes"
+        meta_str = f"{match_pct}% Match    {rel_year}    TV-14    {count_label}    HD"
+        draw.text((60, 415), meta_str, fill=(70, 211, 105), font=get_font(14, bold=True))
+        genre_text = " • ".join(genres[:4]) if genres else "Drama • Mystery"
+        draw.text((60, 445), genre_text, fill=(180, 180, 180), font=get_font(13, bold=False))
 
         words = synopsis.split()
         lines, curr = [], ""
-        
         for w in words:
             if len(curr + " " + w) < 60: curr += " " + w
             else: lines.append(curr.strip()); curr = w
         if curr: lines.append(curr.strip())
         
-        sy = 495
+        sy = 475
         for line in lines[:3]:
             draw.text((60, sy), line, fill=(200, 200, 200), font=get_font(13, bold=False))
             sy += 18
 
-        draw.rectangle([60, 570, 170, 610], fill=(255, 255, 255))
-        draw.text((85, 582), "▶ Play", fill=(0, 0, 0), font=get_font(14, bold=True))
-        draw.rectangle([180, 570, 300, 610], outline=(150, 150, 150), width=1)
-        draw.text((198, 582), "+ My List", fill=(255, 255, 255), font=get_font(14, bold=True))
-        draw.text((1180, 650), f"★ {rating_val}", fill=(255, 215, 0), font=get_font(18, bold=True))
+        # Buttons (Play / Read & My List)
+        btn_label = "▶  Read" if is_manga_style else "▶  Play"
+        draw.rectangle([60, 550, 170, 590], fill=(255, 255, 255))
+        draw.text((85, 562), btn_label, fill=(0, 0, 0), font=get_font(14, bold=True))
+        
+        draw.rectangle([180, 550, 300, 590], outline=(150, 150, 150), width=1)
+        draw.text((198, 562), "+ My List", fill=(255, 255, 255), font=get_font(14, bold=True))
+        
+        # Star Rating on Bottom Right
+        draw.text((1180, 640), f"★ {rating_val}", fill=(255, 215, 0), font=get_font(18, bold=True))
 
 # ------------------------ #
 # Don't Remove My Credits
@@ -2084,7 +2160,7 @@ def generate_custom_media_card(poster_bytes, portrait_bytes_list, title, genres,
 # Support : @Coders_Grp 
 # ------------------------ #
     
-    elif "AERO" in b_upper or "LIGHT" in b_upper:
+    elif ("AERO" in b_upper or "LIGHT" in b_upper) and "MOD" not in b_upper:
         canvas = Image.new("RGBA", (target_w, target_h), (255, 255, 255, 255))
         art_left = ImageOps.fit(raw_art, (640, target_h), method=Image.Resampling.LANCZOS)
         canvas.paste(art_left, (0, 0))
@@ -2102,7 +2178,7 @@ def generate_custom_media_card(poster_bytes, portrait_bytes_list, title, genres,
         sub_type = f"STUDIO: {studio_name}"
         
         draw.text((680, 30), main_type, fill=(0, 0, 0), font=get_font(22, bold=True))
-        draw.text((760, 30), "UNITY", fill=(80, 80, 80), font=get_font(22, bold=False))
+        draw.text((750, 30), "UNITY", fill=(80, 80, 80), font=get_font(22, bold=False))
         draw.text((910, 38), sub_type, fill=(140, 140, 140), font=get_font(11, bold=True))
         draw.text((680, 110), title.upper()[:22], fill=(10, 10, 10), font=get_font(48, bold=True))
         draw.line([(680, 180), (1220, 180)], fill=(180, 180, 180), width=2)
@@ -2142,6 +2218,87 @@ def generate_custom_media_card(poster_bytes, portrait_bytes_list, title, genres,
         draw.rounded_rectangle([750, 560, 1150, 610], radius=25, fill=(20, 20, 20))
         draw.ellipse([910, 535, 990, 615], fill=(230, 50, 50))
         draw.text((940, 555), "+", fill=(255, 255, 255), font=get_font(28, bold=True))
+    
+# ------------------------ #
+# Don't Remove My Credits
+# Owner: @Mr_Mohammed_29
+# Updates: @Aero_Unity 
+# Support : @Coders_Grp 
+# ------------------------ #
+
+    elif "MOD" in b_upper:
+        canvas = base_backdrop.copy()
+        overlay = Image.new("RGBA", (target_w, target_h), (10, 10, 15, 215))
+        canvas.alpha_composite(overlay)
+        draw = ImageDraw.Draw(canvas)
+
+        draw.rectangle([0, 0, 65, target_h], fill=(12, 12, 18, 255))
+        draw.text((22, 45), "🏠", fill=(255, 255, 255), font=get_font(16))
+        draw.text((22, 130), "🔍", fill=(180, 180, 180), font=get_font(16))
+        draw.text((22, 220), "🎛️", fill=(180, 180, 180), font=get_font(16))
+        draw.text((22, 310), "⭐", fill=(180, 180, 180), font=get_font(16))
+        draw.rectangle([0, 305, 5, 335], fill=(245, 180, 20))
+
+        draw.text((100, 30), "@Aero_Unity", fill=(255, 255, 255), font=get_font(16, bold=True))
+        
+        gx = 100
+        gy = 60
+        pill_colors = [(235, 50, 50), (245, 150, 20), (255, 20, 120), (50, 130, 245)]
+        for idx, g in enumerate(genres[:3]):
+            pill_txt = str(g).upper()
+            pw = max(65, len(pill_txt) * 8 + 16)
+            p_color = pill_colors[idx % len(pill_colors)]
+            draw.rounded_rectangle([gx, gy, gx + pw, gy + 26], radius=13, fill=p_color)
+            draw.text((gx + 10, gy + 5), pill_txt, fill=(255, 255, 255), font=get_font(11, bold=True))
+            gx += pw + 10
+
+        draw.text((100, 105), title.upper()[:22], fill=(255, 255, 255), font=get_font(42, bold=True))
+        rel_year = extra_meta.get("year", "2024") if extra_meta else "2024"
+        season_label = f"FALL {rel_year}" if "MODM" not in b_upper else f"RELEASE {rel_year}"
+        draw.text((100, 158), season_label, fill=(245, 190, 20), font=get_font(18, bold=True))
+        draw.text((100, 225), "INFORMATION", fill=(245, 60, 60), font=get_font(14, bold=True))
+        count_display = extra_meta.get("chapters", "700 Chapters") if "MODM" in b_upper else extra_meta.get("episodes", "220 Episodes")
+        info_text = f"> STUDIO : {studio_name}\n> STATUS : {status_str}\n> TOTAL : {count_display}\n> RATING : {match_pct}/100"
+        draw.text((100, 250), info_text, fill=(210, 210, 210), font=get_font(13, bold=False))
+        card_x, card_y, card_w, card_h = 680, 30, 560, 210
+        draw.rounded_rectangle([card_x, card_y, card_x + card_w, card_y + card_h], radius=16, fill=(20, 20, 28, 230))
+        
+        try:
+            raw_p = Image.open(io.BytesIO(portrait_bytes_list[0])).convert("RGBA") if portrait_bytes_list else raw_art
+            p_crop = ImageOps.fit(raw_p, (230, 180), method=Image.Resampling.LANCZOS)
+            canvas.paste(p_crop, (card_x + 15, card_y + 15))
+        except Exception:
+            pass
+
+        char_name = (title.split()[0] + " SPOTLIGHT").upper()
+        draw.text((card_x + 260, card_y + 20), char_name[:20], fill=(255, 255, 255), font=get_font(15, bold=True))   
+        char_bio = f"{title} is highlighted as one of the featured titles. Recognized for exceptional storytelling, art direction, and world-building..."
+        
+        b_words = char_bio.split()
+        b_lines, b_curr = [], ""
+        for w in b_words:
+            if len(b_curr + " " + w) < 30: b_curr += " " + w
+            else: b_lines.append(b_curr.strip()); b_curr = w
+        if b_curr: b_lines.append(b_curr.strip())
+        
+        by = card_y + 50
+        for line in b_lines[:4]:
+            draw.text((card_x + 260, by), line, fill=(180, 180, 180), font=get_font(11, bold=False))
+            by += 16
+
+        draw.text((680, 265), "OVERVIEW", fill=(245, 180, 20), font=get_font(14, bold=True))
+
+        words = synopsis.split()
+        lines, curr = [], ""
+        for w in words:
+            if len(curr + " " + w) < 58: curr += " " + w
+            else: lines.append(curr.strip()); curr = w
+        if curr: lines.append(curr.strip())
+
+        sy = 295
+        for line in lines[:8]:
+            draw.text((680, sy), line, fill=(210, 210, 210), font=get_font(12, bold=False))
+            sy += 18
 
 # ------------------------ #
 # Don't Remove My Credits
@@ -2292,7 +2449,7 @@ def send_style_poster_response(message, cmd, query, branding_name):
                 bot.delete_message(message.chat.id, status_msg.message_id)
             except Exception:
                 pass
-            bot.reply_to(message, f"<b>❌ Not Found.</b>\nCould not find content for <b>{html.escape(query)}</b>.", parse_mode="HTML")
+            bot.reply_to(message, f"Could not find content for <b>{html.escape(query)}</b>.", parse_mode="HTML")
             return
 
         item = results[0]
@@ -2368,11 +2525,20 @@ def send_style_poster_response(message, cmd, query, branding_name):
         else:
             status_str = raw_status.upper() if raw_status else "FINISHED"
 
+        release_date = item.get("release_date") or item.get("first_air_date") or ""
+        year_str = release_date.split("-")[0] if release_date else "2024"
+        
+        ep_count = det_res.get("number_of_episodes") or 12
+        chap_str = f"{ep_count * 15}+" if ep_count else "700+"  # Estimates chapters if it's a long running series/manga format
+
         extra_metadata = {
             "studio": studio_str,
             "status": status_str,
             "media_format": media_format,
-            "vote_average": vote_avg
+            "vote_average": vote_avg,
+            "year": year_str,
+            "episodes": f"{ep_count} Episodes" if ep_count else "12 Episodes",
+            "chapters": chap_str
         }
 
         images = det_res.get("images", {})
@@ -2419,8 +2585,18 @@ def send_style_poster_response(message, cmd, query, branding_name):
 
         app_url = os.environ.get("RENDER_EXTERNAL_URL") or request.host_url.rstrip('/')
         direct_link = f"{app_url}/poster/{cache_key}"
+        media_title = item.get("title") or item.get("name") or "N/A"
+        release_date = item.get("release_date") or item.get("first_air_date") or ""
+        year_str = release_date.split("-")[0] if release_date else "N/A"
+        media_type_str, studio_str = detect_media_type_and_studio(item, session, TMDB_API_KEY)
 
-        caption_text = f"<b>Genarated By @Aero_Poster_Bot</b>\n\n•<b>Powered By : @Aero_Unity</b>\n\n<b>Open Image:</b> <b><a href=\"{direct_link}\">Click here</a></b>"
+        caption_text = (
+            f"<b>● Tɪᴛʟᴇ  :</b> {html.escape(media_title)}\n"
+            f"<b>● Yᴇᴀʀ :</b> {year_str}\n"
+            f"<b>● Tʏᴘᴇ :</b> {media_type_str}\n"
+            f"<b>● Sᴛᴜᴅɪᴏ :</b> {html.escape(studio_str)}\n"
+            f"<b>● Oᴘᴇɴ Iᴍᴀɢᴇ : <a href=\"{direct_link}\">Cʟɪᴄᴋ Hᴇʀᴇ</a></b>\n\n"
+        )
         markup = InlineKeyboardMarkup()
         markup.add(InlineKeyboardButton(text="• Uᴘᴅᴀᴛᴇs •", url="https://t.me/Aero_Unity"))
 
