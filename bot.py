@@ -2413,6 +2413,22 @@ def generate_custom_media_card(poster_bytes, portrait_bytes_list, title, genres,
 # ------------------------ #
 
 def send_style_poster_response(message, cmd, query, branding_name):
+    user_id = message.from_user.id
+    
+    if message.chat.type == "private" and user_id != OWNER_ID:
+        pm_enabled = database.get_global_pm_search()
+        if not pm_enabled:
+            access_denied_text = (
+                "🔒 <b>ᴀᴄᴄᴇss ᴅᴇɴɪᴇᴅ</b>\n\n"
+                "<b>ʏᴏᴜ ᴀʀᴇ ɴᴏᴛ ᴀ ᴀᴜᴛʜᴏʀɪsᴇᴅ ᴜsᴇʀ.\n\n"
+                "ᴘʟᴇᴀsᴇ ᴜsᴇ ᴛʜɪs ʙᴏᴛ ɪɴ ᴏᴜʀ ᴘᴏsᴛᴇʀ ɢʀᴏᴜᴘ.</b>"
+            )
+            markup = telebot.types.InlineKeyboardMarkup()
+            group_btn = telebot.types.InlineKeyboardButton(text="• ᴊᴏɪɴ ᴘᴏsᴛᴇʀ ɢʀᴏᴜᴘ •", url=POSTER_GROUP_URL)
+            markup.add(group_btn)
+            bot.reply_to(message, access_denied_text, parse_mode="HTML", reply_markup=markup)
+            return
+            
     style_names = {
         "ani": "AniList Anime",
         "anim": "AniList Manga",
