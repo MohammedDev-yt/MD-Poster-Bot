@@ -1,4 +1,6 @@
 
+ 
+
 <p align="center">
   <img src="https://capsule-render.vercel.app/api?type=waving&color=0:050505,50:6A00FF,100:00C8FF&height=180&section=header&text=UNIVERSAL%20POSTER%20BOT&fontSize=35&fontColor=ffffff&animation=fadeIn&fontAlignY=38&desc=Developed%20By%20Mohammed&descAlignY=60&descSize=16" width="100%">
 </p>
@@ -39,10 +41,12 @@
 ## ✨ Features
 
 - 🎬 **Universal Title Search:** Search movies, TV series, anime, and regional dramas instantly.
+- 🎨 **11 Unique Poster Styles:** Generate tailored cards across AniList, Netflix, Crunchyroll, Aero Light/Dark Cruise, Webtoon Flix, and Modern Aero layouts.
 - 🖼️ **Logo-Driven Poster Layouts:** Automatically overlays official TMDb title logos on high-resolution landscape banners with clean blurring and padding.
-- 📱 **Dual Orientation Links:** Generates both landscape banner links and tall portrait poster preview links, and manga poster cards.
-- 📑 **Interactive Pagination:** Browse multiple backdrop options seamlessly with inline pagination controls (`<< < 1/N > >>`).
-- 📊 **Detailed IMDb Lookup:** Fetch rich metadata cards, genres, ratings, and storylines using `/imdb`.
+- 📱 **Dual Orientation & Multi-Poster Previews:** Generates landscape banners, portrait links, and multi-poster thumbnail grids.
+- 🔍 **Automated Metadata & Studio Detection:** Automatically classifies media formats (Anime, Manga, Manhwa, Manhua, Pornhwa) and studio/network information.
+- 📑 **Interactive Pagination:** Browse multiple backdrop options and 8-page paginated help menus seamlessly with custom inline keyboard markups.
+- 📊 **Detailed IMDb & JHS Lookup:** Fetch rich metadata cards, genres, ratings, and storylines using `/imdb` and `/jhs`.
 - 🔒 **Force Subscription Support:** Require users to join specific update/support channels before accessing the bot.
 - 📢 **Advanced Broadcast System:** Broadcast text, photos, videos, GIFs, stickers, and interactive inline buttons with `/broadcast`, `/broadcastpin`, and `/broadcastunpin`.
 - 🗄️ **MongoDB & SQLite Fallback:** Flexible database backend with automatic user tracking on `/start`.
@@ -56,25 +60,35 @@
 ### 👤 User & Owner Commands
 
 ```text
-start - sᴛᴀʀᴛ ᴛʜᴇ ʙᴏᴛ ᴀɴᴅ ᴠɪᴇᴡ ʜᴏᴍᴇ ᴍᴇɴᴜ
-help - ʜᴏᴡ ᴛᴏ sᴇᴀʀᴄʜ ᴘᴏsᴛᴇʀs & ᴜsᴇ ʙᴏᴛ
-imdb - sᴇᴀʀᴄʜ ᴍᴏᴠɪᴇ/sᴇʀɪᴇs ᴅᴇᴛᴀɪʟs ᴏɴ ɪᴍᴅʙ
-jhs - sᴇᴀʀᴄʜ ᴀɴᴅ ɢᴇɴᴇʀᴀᴛᴇ ᴄᴜsᴛᴏᴍ ᴍᴇᴅɪᴀ ᴘᴏsᴛᴇʀs
-manga - sᴇᴀʀᴄʜ ᴀɴᴅ ɢᴇɴᴇʀᴀᴛᴇ ᴍᴀɴɢᴀ/ᴍᴀɴʜᴡᴀ ᴄᴀʀᴅs
-stats - ᴄʜᴇᴄᴋ ᴛᴏᴛᴀʟ ᴜɴɪǫᴜᴇ ʙᴏᴛ ᴜsᴇʀs (ᴀᴅᴍɪɴ)
-addforcesub - ᴀᴅᴅ ᴀ ᴄʜᴀɴɴᴇʟ ᴛᴏ ғᴏʀᴄᴇ sᴜʙsᴄʀɪᴘᴛɪᴏɴ ʟɪsᴛ (ᴀᴅᴍɪɴ)
-removeforce - ʀᴇᴍᴏᴠᴇ ᴀ ᴄʜᴀɴɴᴇʟ ғʀᴏᴍ ғᴏʀᴄᴇ sᴜʙsᴄʀɪᴘᴛɪᴏN ʟɪsᴛ (ᴀᴅᴍɪɴ)
-fsublist - ʟɪsᴛ ᴀʟʟ ᴀᴄᴛɪᴠᴇ ғᴏʀᴄᴇ sᴜʙsᴄʀɪᴘᴛɪᴏN ᴄʜᴀɴɴᴇʟs (ᴀᴅᴍɪɴ)
-ban - ʙᴀɴ ᴀ ᴜsᴇʀ ғʀᴏᴍ ᴜsɪɴɢ ᴛʜᴇ ʙᴏᴛ (ᴀᴅᴍɪɴ)
-unban - ᴜɴʙᴀɴ ᴀ ᴜsᴇʀ ғʀᴏᴍ ᴜsɪɴɢ ᴛʜᴇ ʙᴏᴛ (ᴀᴅᴍɪɴ)
-banlist - ᴠɪᴇᴡ ʟɪsᴛ ᴏғ ʙᴀɴɴᴇᴅ ᴜsᴇʀs (ᴀᴅᴍɪɴ)
-pmsearch - ᴛᴏɢɢʟᴇ ᴘᴍ sᴇᴀʀᴄʜ ᴏɴ ᴏʀ ᴏғғ (ᴀᴅᴍɪɴ)
-broadcast - ʙʀᴏᴀᴅᴄᴀsᴛ ᴀ ᴍᴇssᴀɢᴇ ᴛᴏ ᴀʟʟ ᴜsᴇʀs (ᴀᴅᴍɪɴ)
-broadcastpin - ʙʀᴏᴀᴅᴄᴀsᴛ ᴀ ᴍᴇssᴀɢᴇ ᴀɴᴅ ᴘɪɴ ɪᴛ (ᴀᴅᴍɪɴ)
-broadcastunpin - ʙʀᴏᴀᴅᴄᴀsᴛ, ᴘɪɴ, ᴀɴᴅ ᴜɴᴘɪɴ ᴀ ᴍᴇssᴀɢᴇ (ᴀᴅᴍɪɴ)
+start           - sᴛᴀʀᴛ ᴛʜᴇ ʙᴏᴛ ᴀɴᴅ ᴠɪᴇᴡ ʜᴏᴍᴇ ᴍᴇɴᴜ
+help            - ʜᴏᴡ ᴛᴏ sᴇᴀʀᴄʜ ᴘᴏsᴛᴇʀs & ᴜsᴇ ʙᴏᴛ
+ani             - ɢᴇɴᴇʀᴀᴛᴇ ᴀɴɪʟɪsᴛ ᴀɴɪᴍᴇ ᴘᴏsᴛᴇʀ
+anim            - ɢᴇɴᴇʀᴀᴛᴇ ᴀɴɪʟɪsᴛ ᴍᴀɴɢᴀ ᴘᴏsᴛᴇʀ
+crun            - ɢᴇɴᴇʀᴀᴛᴇ ᴄʀᴜɴᴄʜʏʀᴏʟʟ ᴘᴏsᴛᴇʀ
+net             - ɢᴇɴᴇʀᴀᴛᴇ ɴᴇᴛғʟɪx ᴀɴɪᴍᴇ ᴘᴏsᴛᴇʀ
+netm            - ɢᴇɴᴇʀᴀᴛᴇ ɴᴇᴛғʟɪx ᴍᴀɴɢᴀ ᴘᴏsᴛᴇʀ
+light           - ɢᴇɴᴇʀᴀᴛᴇ ᴀᴇʀᴏ ᴄʀᴜɪsᴇ ᴀɴɪᴍᴇ ᴘᴏsᴛᴇʀ
+lightm          - ɢᴇɴᴇʀᴀᴛᴇ ᴀᴇʀᴏ ᴄʀᴜɪsᴇ ᴍᴀɴɢᴀ ᴘᴏsᴛᴇʀ
+dark            - ɢᴇɴᴇʀᴀᴛᴇ ᴡᴇʙᴛᴏᴏɴ ғʟɪx ᴀɴɪᴍᴇ ᴘᴏsᴛᴇʀ
+darkm           - ɢᴇɴᴇʀᴀᴛᴇ ᴡᴇʙᴛᴏᴏɴ ғʟɪx ᴍᴀɴɢ🇦 ᴘᴏsᴛᴇʀ
+netcr           - ɢᴇɴᴇʀᴀᴛᴇ ɴᴇᴛғʟɪx x ᴄʀᴜɴᴄʜʏʀᴏʟʟ ᴘᴏsᴛᴇʀ
+mod             - ɢᴇɴᴇʀᴀᴛᴇ ᴍᴏᴅᴇʀɴ ᴀᴇʀᴏ ᴀɴɪᴍᴇ ᴘᴏsᴛᴇʀ
+modm            - ɢᴇɴᴇʀᴀᴛᴇ ᴍᴏᴅᴇʀɴ ᴀᴇʀᴏ ᴍᴀɴɢᴀ ᴘᴏsᴛᴇʀ
+imdb            - sᴇᴀʀᴄʜ ᴍᴏᴠɪᴇ/sᴇʀɪᴇs ᴅᴇᴛᴀɪʟs ᴏɴ ɪᴍᴅʙ
+jhs             - sᴇᴀʀᴄʜ ᴀɴᴅ ɢᴇɴᴇʀᴀᴛᴇ ᴄᴜsᴛᴏᴍ ᴍᴇᴅɪᴀ ᴘᴏsᴛᴇʀs
+manga           - sᴇᴀʀᴄʜ ᴀɴᴅ ɢᴇɴᴇʀᴀᴛᴇ ᴍᴀɴɢᴀ/ᴍᴀɴʜᴡᴀ ᴄᴀʀᴅs
+stats           - ᴄʜᴇᴄᴋ ᴛᴏᴛᴀʟ ᴜɴɪǫᴜᴇ ʙᴏᴛ ᴜsᴇʀs (ᴀᴅᴍɪɴ)
+addforcesub     - ᴀᴅᴅ ᴀ ᴄʜᴀɴɴᴇʟ ᴛᴏ ғᴏʀᴄᴇ sᴜʙsᴄʀɪᴘᴛɪᴏɴ ʟɪsᴛ (ᴀᴅᴍɪɴ)
+removeforce     - ʀᴇᴍᴏᴠᴇ ᴀ ᴄʜᴀɴɴᴇʟ ғʀᴏᴍ ғᴏʀᴄᴇ sᴜʙsᴄʀɪᴘᴛɪᴏN ʟɪsᴛ (ᴀᴅᴍɪɴ)
+fsublist        - ʟɪsᴛ ᴀʟʟ ᴀᴄᴛɪᴠᴇ ғᴏʀᴄᴇ sᴜʙsᴄʀɪᴘᴛɪᴏN ᴄʜᴀɴɴᴇʟs (ᴀᴅᴍɪɴ)
+ban             - ʙᴀɴ ᴀ ᴜsᴇʀ ғʀᴏᴍ ᴜsɪɴɢ ᴛʜᴇ ʙᴏᴛ (ᴀᴅᴍɪɴ)
+unban           - ᴜɴʙᴀɴ ᴀ ᴜsᴇʀ ғʀᴏᴍ ᴜsɪɴɢ ᴛʜᴇ ʙᴏᴛ (ᴀᴅᴍɪɴ)
+banlist         - ᴠɪᴇᴡ ʟɪsᴛ ᴏғ ʙᴀɴɴᴇᴅ ᴜsᴇʀs (ᴀᴅᴍɪɴ)
+pmsearch        - ᴛᴏɢɢʟᴇ ᴘᴍ sᴇᴀʀᴄʜ ᴏɴ ᴏʀ ᴏғғ (ᴀᴅᴍɪɴ)
+broadcast       - ʙʀᴏᴀᴅᴄᴀsᴛ ᴀ ᴍᴇssᴀɢᴇ ᴛᴏ ᴀʟʟ ᴜsᴇʀs (ᴀᴅᴍɪɴ)
+broadcastpin    - ʙʀᴏᴀᴅᴄᴀsᴛ ᴀ ᴍᴇssᴀɢᴇ ᴀɴᴅ ᴘɪɴ ɪᴛ (ᴀᴅᴍɪɴ)
+broadcastunpin  - ʙʀᴏᴀᴅᴄᴀsᴛ, ᴘɪɴ, ᴀɴᴅ ᴜɴᴘɪɴ ᴀ ᴍᴇssᴀɢᴇ (ᴀᴅᴍɪɴ)
 ```
-
-<img src="https://user-images.githubusercontent.com/73097560/115834477-dbab4500-a447-11eb-908a-139a6edaec5c.gif">
 
 <details>
 <summary><h2> Click Here Development & Deployment</h2></summary>
